@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useFormik } from "formik"
 import React, { useEffect, useState } from "react"
-// import { useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import {
   Card,
   CardBody,
@@ -15,16 +15,14 @@ import {
   Row,
 } from "reactstrap"
 import * as Yup from "yup"
-import jsPDF from "jspdf"
-import images from "assets/images/certificate-background.png"
-import {ToastContainer,toast} from "react-toastr"
-import 'react-toastify/dist/ReactToastify.css';
+import Swal from "sweetalert2"
+
 function Pledge() {
   const [isLoading, setIsLoading] = useState(false)
-  // const [user, setUser] = useState({})
+  const [user, setUser] = useState({})
   // const [redirectToUserView, setRedirectToUserView] = useState(false)
 
-  // let history = useHistory()
+  let history = useHistory()
 
   const formik = useFormik({
     initialValues: {
@@ -37,69 +35,62 @@ function Pledge() {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Please Enter Your Name"),
       email: Yup.string().required("Please Enter Your Email"),
+      phone: Yup.string()
+        // .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+        .required("Please Enter Your Phone Number"),
       isCheck: Yup.boolean().oneOf([true], "This is a required question"),
     }),
     onSubmit: async values => {
       setIsLoading(true)
       try {
         let response = await axios.post(
-          `https://exciting-blackburn.142-93-209-108.plesk.page/api/event-users`,
+          `http://localhost:1337/api/pledge-users`,
           { data: values }
         )
-        if (response?.data?.error) {
-          throw response?.data?.error
-        } else {
-          // Clear formik errors on successful submission
-          // formik.setErrors({})
-          // setUser(response.data.data.attributes)
-          // setRedirectToUserView(true)
-        generateCertificate(values.name)
+        if (response) {
+          if (response) {
+            const userName = response.data.data.attributes.name
+            setUser(userName)
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Successfully Plegde",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            history.push("/certificate", { userName })
+          }
         }
-        if (error.response && error.response.status === 400) {
-          // Handle Axios client error (status code 400)
-          toast("User Alrady Register")}
       } catch (error) {
-        console.log(error)
+        console.error("Error:", error.response)
+        if (error.response && error.response.status === 400) {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "User Already Register",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          history.push("/dashboard")
+        } else {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "An error occurred. Please try again later.",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          history.push("/dashboard")
+        }
       } finally {
         setIsLoading(false)
       }
     },
   })
-  const generateCertificate = name => {
-    // Create a new jsPDF instance
-    const doc = new jsPDF()
 
-    // Add background image
-    doc.addImage(
-      images,
-      "PNG",
-      0,
-      0,
-      doc.internal.pageSize.getWidth(),
-      doc.internal.pageSize.getHeight()
-    )
-
-    // Add recipient name
-    doc.setFontSize(36)
-    doc.setFont("helvetica") // Change the font family and style
-    doc.text(name, 105, 160, { align: "center" }) // 105 and 160: horizontal and vertical positions of the text
-
-    // Add course name
-    // doc.setFontSize(20);
-    // doc.text(course, 105, 195, { align: 'center' }); // 105 and 195: horizontal and vertical positions of the text
-
-    // Save the PDF
-    doc.save(`${name}.pdf`)
-  }
-  //   useEffect(() => {
-  //     if (redirectToUserView) {
-  //       history.push("/certificate")
-  //     }
-  //   }, [redirectToUserView, history, user])
   return (
     <React.Fragment>
       <div className="page-content">
-        <ToastContainer/>
         {isLoading ? (
           <div id="preloader">
             <div id="status">
@@ -197,17 +188,17 @@ function Pledge() {
                             name="phone"
                             onChange={formik.handleChange}
                             value={formik.values.phone}
-                            // invalid={
-                            //   formik.touched.phone && formik.errors.phone
-                            //     ? true
-                            //     : false
-                            // }
+                            invalid={
+                              formik.touched.phone && formik.errors.phone
+                                ? true
+                                : false
+                            }
                           />
-                          {/* {formik.touched.phone && formik.errors.phone ? (
+                          {formik.touched.phone && formik.errors.phone ? (
                             <FormFeedback type="invalid">
                               {formik.errors.phone}
                             </FormFeedback>
-                          ) : null} */}
+                          ) : null}
                           {/* </div> */}
                         </div>
                       </Col>

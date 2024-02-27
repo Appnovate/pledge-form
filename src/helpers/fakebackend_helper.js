@@ -205,6 +205,7 @@ export const deleteUser = user => del(url.DELETE_USER, { headers: { user } })
 /** PROJECT */
 // add user
 export const addNewProject = project => post(url.ADD_NEW_PROJECT, project)
+export const addPledge = data => post(url.PLEDGE, data)
 
 // update user
 export const updateProject = project => put(url.UPDATE_PROJECT, project)

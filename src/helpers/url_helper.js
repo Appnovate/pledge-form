@@ -2,8 +2,8 @@
 export const POST_FAKE_REGISTER = "/post-fake-register"
 
 //LOGIN
-export const POST_FAKE_LOGIN = "/post-fake-login"
-export const POST_FAKE_JWT_LOGIN = "/post-jwt-login"
+export const POST_FAKE_LOGIN = ""
+export const POST_FAKE_JWT_LOGIN = "/auth/local"
 export const POST_FAKE_PASSWORD_FORGET = "/fake-forget-pwd"
 export const POST_FAKE_JWT_PASSWORD_FORGET = "/jwt-forget-pwd"
 export const SOCIAL_LOGIN = "/social-login"
@@ -84,7 +84,7 @@ export const UPDATE_PROJECT = "/update/project"
 export const DELETE_PROJECT = "/delete/project"
 
 //TASKS
-export const GET_TASKS = "/tasks"
+export const GET_TASKS = "/pledge-users"
 
 //CONTACTS
 export const GET_USERS = "/users"
@@ -109,3 +109,5 @@ export const ON_LIKNE_COMMENT = "/comments-product-action"
 export const ON_ADD_REPLY = "/comments-product-add-reply"
 
 export const ON_ADD_COMMENT = "/comments-product-add-comment"
+
+export const   PLEDGE = "/api/pledge-forms"
