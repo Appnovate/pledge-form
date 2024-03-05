@@ -1,59 +1,73 @@
-import React, { useEffect } from "react";
-import MetaTags from "react-meta-tags";
-import { Row, Col, CardBody, Card, Alert, Container, Input, Label, Form, FormFeedback } from "reactstrap";
+import React, { useEffect, useState } from "react"
+import MetaTags from "react-meta-tags"
+import {
+  Row,
+  Col,
+  CardBody,
+  Card,
+  Alert,
+  Container,
+  Input,
+  Label,
+  Form,
+  FormFeedback,
+} from "reactstrap"
 
 // Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
+import * as Yup from "yup"
+import { useFormik } from "formik"
 
-// action
-import { registerUser, apiError } from "../../store/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 // import images
-import profileImg from "../../assets/images/profile-img.png";
-import logoImg from "../../assets/images/logo.svg";
+import profileImg from "../../assets/images/profile-img.png"
+import logoImg from "../../assets/images/logo.svg"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
 
 const Register = props => {
-  const dispatch = useDispatch();
-
+  let history = useHistory()
+  const [user, setUser] = useState(false)
+  const [registrationError, setRegistrationError] = useState("")
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      email: '',
-      username: '',
-      password: '',
+      email: "",
+      username: "",
+      password: "",
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
       username: Yup.string().required("Please Enter Your Username"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: (values) => {
-      dispatch(registerUser(values));
-    }
-  });
+    onSubmit: async values => {
+      try {
+        let res = await axios.post(
+          `${process.env.REACT_APP_URL}/auth/local/register`,
+          values
+        )
 
-  const { user, registrationError, loading } = useSelector(state => ({
-    user: state.Account.user,
-    registrationError: state.Account.registrationError,
-    loading: state.Account.loading,
-  }));
-
-  // handleValidSubmit
-  const handleValidSubmit = values => {
-    dispatch(registerUser(values));
-  };
-
-  useEffect(() => {
-    dispatch(apiError(""));
-  }, []);
+        if (res.status === 200) {
+          setUser(true)
+          localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
+          setTimeout(() => {
+            history.replace("/dashboard")
+          }, 1000)
+        }
+      } catch (error) {
+        if (error.response) {
+          setRegistrationError(error.response.data.error.message)
+        } else {
+          setRegistrationError(
+            "Network error. Please check your internet connection."
+          )
+        }
+      }
+    },
+  })
 
   return (
     <React.Fragment>
@@ -101,10 +115,10 @@ const Register = props => {
                   <div className="p-2">
                     <Form
                       className="form-horizontal"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
+                      onSubmit={e => {
+                        e.preventDefault()
+                        validation.handleSubmit()
+                        return false
                       }}
                     >
                       {user && user ? (
@@ -129,11 +143,15 @@ const Register = props => {
                           onBlur={validation.handleBlur}
                           value={validation.values.email || ""}
                           invalid={
-                            validation.touched.email && validation.errors.email ? true : false
+                            validation.touched.email && validation.errors.email
+                              ? true
+                              : false
                           }
                         />
                         {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
+                          <FormFeedback type="invalid">
+                            {validation.errors.email}
+                          </FormFeedback>
                         ) : null}
                       </div>
 
@@ -147,11 +165,17 @@ const Register = props => {
                           onBlur={validation.handleBlur}
                           value={validation.values.username || ""}
                           invalid={
-                            validation.touched.username && validation.errors.username ? true : false
+                            validation.touched.username &&
+                            validation.errors.username
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.username && validation.errors.username ? (
-                          <FormFeedback type="invalid">{validation.errors.username}</FormFeedback>
+                        {validation.touched.username &&
+                        validation.errors.username ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.username}
+                          </FormFeedback>
                         ) : null}
                       </div>
                       <div className="mb-3">
@@ -164,11 +188,17 @@ const Register = props => {
                           onBlur={validation.handleBlur}
                           value={validation.values.password || ""}
                           invalid={
-                            validation.touched.password && validation.errors.password ? true : false
+                            validation.touched.password &&
+                            validation.errors.password
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.password && validation.errors.password ? (
-                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
+                        {validation.touched.password &&
+                        validation.errors.password ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.password}
+                          </FormFeedback>
                         ) : null}
                       </div>
 
@@ -211,7 +241,7 @@ const Register = props => {
         </Container>
       </div>
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

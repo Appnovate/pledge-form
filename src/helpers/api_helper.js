@@ -1,8 +1,7 @@
 import axios from "axios"
-import accessToken from "./jwt-token-access/accessToken"
 
 //pass new generated access token here
-const token = accessToken
+// const token = accessToken
 
 //apply base url for axios
 const API_URL = process.env.REACT_APP_URL
@@ -10,8 +9,18 @@ const API_URL = process.env.REACT_APP_URL
 const axiosApi = axios.create({
   baseURL: API_URL,
 })
-axiosApi.defaults.headers.common["Authorization"] = 
-
+axiosApi.interceptors.request.use(config => {
+  const authUser = localStorage.getItem("authUser")
+  if (authUser) {
+    const token = JSON.parse(authUser)
+    config.headers["Authorization"] = `Bearer ${token}`
+  } else {
+    config.headers["Authorization"] = 0
+  }
+  return config
+})
+// axiosApi.defaults.headers.common["Authorization"] = `Bearer ${obj}`
+// `Bearer ${obj}`
 axiosApi.interceptors.response.use(
   response => response,
   error => Promise.reject(error)

@@ -1,5 +1,5 @@
 //REGISTER
-export const POST_FAKE_REGISTER = "/post-fake-register"
+export const POST_FAKE_REGISTER = "/auth/local/register"
 
 //LOGIN
 export const POST_FAKE_LOGIN = ""
@@ -13,7 +13,7 @@ export const POST_EDIT_JWT_PROFILE = "/post-jwt-profile"
 export const POST_EDIT_PROFILE = "/post-fake-profile"
 
 //PRODUCTS
-export const GET_PRODUCTS = "/products"
+export const GET_PRODUCTS = "/users/me"
 export const GET_PRODUCTS_DETAIL = "/product"
 
 //Mails

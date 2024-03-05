@@ -8,15 +8,10 @@ function Certificate() {
   const location = useLocation()
   const history = useHistory()
   const userName = location.state?.userName
-  // const [loading, setLoading] = useState (false);
-  useEffect(() => {
-    if (!userName) {
-      history.push("/dashboard")
-    }
-  }, [userName, history])
+  const [loading, setLoading] = useState(false)
 
-  const generateCertificate = name => {
-    // setLoading(!loading)
+  const generateCertificate = async name => {
+    setLoading(true)
     const doc = new jsPDF()
     doc.addImage(
       images,
@@ -30,7 +25,7 @@ function Certificate() {
     doc.setFont("helvetica")
     doc.text(name, 105, 160, { align: "center" })
     doc.save(`${name}.pdf`)
-    // setLoading(!loading)
+    setLoading(false)
   }
 
   const handleClick = () => {
@@ -40,43 +35,42 @@ function Certificate() {
       icon: "success",
       title: "Certificate download Successfully",
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     }).then(() => {
-      history.push("/dashboard");
-      history.replace({ ...history.location, state: null });
-    });
+      history.replace({ ...history.location, state: null })
+    })
   }
-  // const handleBack = () => {
-  //   history.push("/pledge")
-  // }
+  const handleBack = () => {
+    history.push("/pledgeIndex")
+  }
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
-          {/* {loading ? (
-          <div id="preloader">
-            <div id="status">
-              <div className="spinner-chase">
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
+          {loading ? (
+            <div id="preloader">
+              <div id="status">
+                <div className="spinner-chase">
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          ""
-        )} */}
+          ) : (
+            ""
+          )}
           <div className="d-flex flex-column align-items-center justify-content-center">
             <p className="display-3">Road Safety Pledged Succesfully</p>
             <p className="display-6">Download your Certificate</p>
 
             <div className="d-flex ">
-              {/* <button onClick={handleBack} className="btn btn-secondary m-2">
+              <button onClick={handleBack} className="btn btn-secondary mx-2">
                 Back
-              </button> */}
+              </button>
 
               <button onClick={handleClick} className="btn btn-primary">
                 Download

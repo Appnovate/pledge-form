@@ -11,17 +11,18 @@ import Register from "../pages/Authentication/Register"
 import ForgetPwd from "../pages/Authentication/ForgetPassword"
 
 // Dashboard
+import PledgeIndex from "../pages/Pledge/index"
+import Pledge from "../pages/Pledge/Pledge" 
+import Certificate from "../pages/Pledge/Certificate"
 import Dashboard from "../pages/Dashboard/index"
-import Pledge from "../pages/Dashboard/Pledge" 
-import Certificate from "../pages/Dashboard/Certificate"
-
 
 const authProtectedRoutes = [
-  // { path: "/dashboard", component: Dashboard },
+  { path: "/dashboard", component: Dashboard },
 
   // //profile
   { path: "/profile", component: UserProfile },
-
+  // { path: "/dashboard", component: Dashboard },
+  
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },
@@ -32,10 +33,10 @@ const publicRoutes = [
   { path: "/login", component: Login },
   { path: "/forgot-password", component: ForgetPwd },
   { path: "/register", component: Register },
-  { path: "/dashboard", component: Dashboard },
   { path: "/pledge", component: Pledge },
   { path: "/certificate", component: Certificate },
-  { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },
+  { path: "/pledgeIndex", component: PledgeIndex },
+  // { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },
 ]
 
 export { publicRoutes, authProtectedRoutes }

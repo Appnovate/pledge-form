@@ -34,10 +34,10 @@ function Pledge() {
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Please Enter Your Name"),
-      email: Yup.string().required("Please Enter Your Email"),
+      email: Yup.string().email("Please Enter a Valid Email").required("Please Enter Your Email"),
       phone: Yup.string()
-        // .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-        .required("Please Enter Your Phone Number"),
+        .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+        .required("Please Enter Your Mobile Number"),
       isCheck: Yup.boolean().oneOf([true], "This is a required question"),
     }),
     onSubmit: async values => {
@@ -50,7 +50,7 @@ function Pledge() {
         if (response) {
           if (response) {
             const userName = response.data.data.attributes.name
-            setUser(userName)
+            setUser(userName) 
             Swal.fire({
               position: "center",
               icon: "success",
@@ -71,7 +71,7 @@ function Pledge() {
             showConfirmButton: false,
             timer: 1500
           });
-          history.push("/dashboard")
+          history.push("/pledgeIndex")
         } else {
           Swal.fire({
             position: "center",
@@ -80,7 +80,7 @@ function Pledge() {
             showConfirmButton: false,
             timer: 1500
           });
-          history.push("/dashboard")
+          history.push("/pledgeIndex")
         }
       } finally {
         setIsLoading(false)
@@ -155,7 +155,7 @@ function Pledge() {
                           {/* <div className="col-md-8"> */}
                           <Input
                             className="form-control"
-                            type="email"
+                            type="text"
                             id="email"
                             name="email"
                             onChange={formik.handleChange}
@@ -179,7 +179,7 @@ function Pledge() {
                     <Row>
                       <Col>
                         <div className="mt-4">
-                          <Label htmlFor="phone">Mobile Number:</Label>
+                          <Label htmlFor="phone">Mobile Number:*</Label>
                           {/* <div className="col-md-8"> */}
                           <Input
                             className="form-control"

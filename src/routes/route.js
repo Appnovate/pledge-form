@@ -13,8 +13,9 @@ const Authmiddleware = ({
     render={props => {
       if (isAuthProtected && !localStorage.getItem("authUser")) {
         return (
+          
           <Redirect
-            to={{ pathname: "/dashboard", state: { from: props.location } }}
+            to={{ pathname: "/login", state: { from: props.location } }}
           />
         )
       }

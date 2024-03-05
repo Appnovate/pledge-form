@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import MetaTags from "react-meta-tags"
-import React from "react"
+import React, { useState } from "react"
 
 import {
   Row,
@@ -15,30 +15,24 @@ import {
   Label,
 } from "reactstrap"
 
-//redux
-import { useSelector, useDispatch } from "react-redux"
-
 import { withRouter, Link } from "react-router-dom"
 
 // Formik validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
 
-
-
-// actions
-// import { loginUser, socialLogin} from "../../store/actions";
-import { loginUser } from "../../store/actions"
 // import images
 import profile from "assets/images/profile-img.png"
 import logo from "assets/images/logo.svg"
 
 //Import config
-import { facebook, google } from "../../config"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
 
 const Login = props => {
-  const dispatch = useDispatch()
-
+  let history = useHistory()
+  const [registrationSuccess, setRegistrationSuccess] = useState("")
+  const [registrationError, setRegistrationError] = useState("")
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -51,15 +45,31 @@ const Login = props => {
       email: Yup.string().required("Please Enter Your Email"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: values => {
-      dispatch(loginUser(values, props.history))
+    onSubmit: async values => {
+      try {
+        let res = await axios.post(`${process.env.REACT_APP_URL}/auth/local`, {
+          identifier: values.email,
+          password: values.password,
+        })
+        console.log(res)
+        if (res.status === 200) {
+          setRegistrationSuccess("Login successfully")
+          localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
+          setTimeout(() => {
+            history.replace("/dashboard")
+          }, 1000)
+        }
+      } catch (error) {
+        if (error.response) {
+          setRegistrationError(error.response.data.error.message)
+        } else {
+          setRegistrationError(
+            "Network error. Please check your internet connection."
+          )
+        }
+      }
     },
   })
-
-  const { error } = useSelector(state => ({
-    error: state.Login.error,
-  }))
-
 
   return (
     <React.Fragment>
@@ -113,8 +123,12 @@ const Login = props => {
                         return false
                       }}
                     >
-                      {error ? <Alert color="danger">{error}</Alert> : null}
-
+                      {registrationError ? (
+                        <Alert color="danger">{registrationError}</Alert>
+                      ) : null}
+                      {registrationSuccess ? (
+                        <Alert color="success">{registrationError}</Alert>
+                      ) : null}
                       <div className="mb-3">
                         <Label className="form-label">Email</Label>
                         <Input
@@ -188,9 +202,7 @@ const Login = props => {
                       <div className="mt-4 text-center">
                         <h5 className="font-size-14 mb-3">Sign in with</h5>
 
-                        <ul className="list-inline">
-                          
-                        </ul>
+                        <ul className="list-inline"></ul>
                       </div>
 
                       <div className="mt-4 text-center">
@@ -218,7 +230,7 @@ const Login = props => {
               </div>
             </Col>
           </Row>
-        </Container>  
+        </Container>
       </div>
     </React.Fragment>
   )

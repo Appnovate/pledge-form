@@ -37,32 +37,32 @@ const Header = props => {
   const [isSearch, setSearch] = useState(false);
   const [socialDrp, setsocialDrp] = useState(false);
 
-  function toggleFullscreen() {
-    if (
-      !document.fullscreenElement &&
-      /* alternative standard method */ !document.mozFullScreenElement &&
-      !document.webkitFullscreenElement
-    ) {
-      // current working methods
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen();
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen(
-          Element.ALLOW_KEYBOARD_INPUT
-        );
-      }
-    } else {
-      if (document.cancelFullScreen) {
-        document.cancelFullScreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen();
-      }
-    }
-  }
+  // function toggleFullscreen() {
+  //   if (
+  //     !document.fullscreenElement &&
+  //     /* alternative standard method */ !document.mozFullScreenElement &&
+  //     !document.webkitFullscreenElement
+  //   ) {
+  //     // current working methods
+  //     if (document.documentElement.requestFullscreen) {
+  //       document.documentElement.requestFullscreen();
+  //     } else if (document.documentElement.mozRequestFullScreen) {
+  //       document.documentElement.mozRequestFullScreen();
+  //     } else if (document.documentElement.webkitRequestFullscreen) {
+  //       document.documentElement.webkitRequestFullscreen(
+  //         Element.ALLOW_KEYBOARD_INPUT
+  //       );
+  //     }
+  //   } else {
+  //     if (document.cancelFullScreen) {
+  //       document.cancelFullScreen();
+  //     } else if (document.mozCancelFullScreen) {
+  //       document.mozCancelFullScreen();
+  //     } else if (document.webkitCancelFullScreen) {
+  //       document.webkitCancelFullScreen();
+  //     }
+  //   }
+  // }
   return (
     <React.Fragment>
       <header id="page-topbar">
@@ -100,7 +100,7 @@ const Header = props => {
               <i className="fa fa-fw fa-bars" />
             </button>
 
-            <form className="app-search d-none d-lg-block">
+            {/* <form className="app-search d-none d-lg-block">
               <div className="position-relative">
                 <input
                   type="text"
@@ -256,7 +256,7 @@ const Header = props => {
                   </Col>
                 </Row>
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
           </div>
 
           <div className="d-flex">
@@ -277,7 +277,7 @@ const Header = props => {
                 }
                 aria-labelledby="page-header-search-dropdown"
               >
-                <form className="p-3">
+                {/* <form className="p-3">
                   <div className="form-group m-0">
                     <div className="input-group">
                       <input
@@ -293,11 +293,11 @@ const Header = props => {
                       </div>
                     </div>
                   </div>
-                </form>
+                </form> */}
               </div>
             </div>
 
-            <LanguageDropdown />
+            {/* <LanguageDropdown />
 
             <Dropdown
               className="d-none d-lg-inline-block ms-1"
@@ -357,9 +357,9 @@ const Header = props => {
                   </Row>
                 </div>
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
 
-            <div className="dropdown d-none d-lg-inline-block ms-1">
+            {/* <div className="dropdown d-none d-lg-inline-block ms-1">
               <button
                 type="button"
                 className="btn header-item noti-icon "
@@ -370,23 +370,23 @@ const Header = props => {
               >
                 <i className="bx bx-fullscreen" />
               </button>
-            </div>
+            </div> */}
 
-            <NotificationDropdown />
+            {/* <NotificationDropdown /> */}
 
-            <ProfileMenu />
+            {/* <ProfileMenu /> */}
 
-            <div className="dropdown d-inline-block">
+            {/* <div className="dropdown d-inline-block">
               <button
                 onClick={() => {
                   props.showRightSidebarAction(!props.showRightSidebar);
                 }}
                 type="button"
-                className="btn header-item noti-icon right-bar-toggle "
+                className="btn header-item noti-icon  right-bar-toggle "
               >
-                <i className="bx bx-cog bx-spin" />
-              </button>
-            </div>
+                logout
+                {/* <i className="bx bx-cog bx-spin" /> */}
+              {/* </button> */} 
           </div>
         </div>
       </header>
