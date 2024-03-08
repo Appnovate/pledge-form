@@ -51,7 +51,7 @@ const Login = props => {
           identifier: values.email,
           password: values.password,
         })
-        console.log(res)
+      
         if (res.status === 200) {
           setRegistrationSuccess("Login successfully")
           localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
@@ -127,7 +127,7 @@ const Login = props => {
                         <Alert color="danger">{registrationError}</Alert>
                       ) : null}
                       {registrationSuccess ? (
-                        <Alert color="success">{registrationError}</Alert>
+                        <Alert color="success">{registrationSuccess}</Alert>
                       ) : null}
                       <div className="mb-3">
                         <Label className="form-label">Email</Label>

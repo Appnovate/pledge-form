@@ -188,11 +188,17 @@ export const getProjectsDetails = id =>
   get(`${url.GET_PROJECT_DETAIL}/${id}`, { params: { id } })
 
 // get tasks
+export const getTasksPagination = (page,sizePerPage) => get(`${url.GET_TASKS}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
 export const getTasks = () => get(url.GET_TASKS)
+export const getTasksFilter = (data) => get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
 
+// site
+export const getSitePagination = (page,sizePerPage) => get(`${url.GET_SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
+export const getSite = () => get(url.GET_SITE)
+export const getSiteFilter = (data) => get(`${url.GET_SITE}?filters[location][$startsWith]=${data}`)
+export const addNewSite = user => post(url.CREATE_SITE, user)
 // get contacts
 export const getUsers = () => get(url.GET_USERS)
-
 // add user
 export const addNewUser = user => post(url.ADD_NEW_USER, user)
 

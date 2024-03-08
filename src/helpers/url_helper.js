@@ -85,6 +85,9 @@ export const DELETE_PROJECT = "/delete/project"
 
 //TASKS
 export const GET_TASKS = "/pledge-users"
+//site
+export const GET_SITE = "/costomers"
+export const CREATE_SITE = "/costomers"
 
 //CONTACTS
 export const GET_USERS = "/users"

@@ -1,81 +1,61 @@
-import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
-import { Row, Col, Collapse } from "reactstrap";
-import { Link, withRouter } from "react-router-dom";
-import classname from "classnames";
+import PropTypes from "prop-types"
+import React, { useState, useEffect } from "react"
+import { Row, Col, Collapse } from "reactstrap"
+import { Link, withRouter } from "react-router-dom"
+import classname from "classnames"
 
 //i18n
-import { withTranslation } from "react-i18next";
+import { withTranslation } from "react-i18next"
 
-import { connect } from "react-redux";
-import { logoutUser } from "store/actions";
+import { connect } from "react-redux"
+import { logoutUser } from "store/actions"
 
 const Navbar = props => {
-
-  const [dashboard, setdashboard] = useState(false);
-  const [ui, setui] = useState(false);
-  const [app, setapp] = useState(false);
-  const [email, setemail] = useState(false);
-  const [ecommerce, setecommerce] = useState(false);
-  const [crypto, setcrypto] = useState(false);
-  const [project, setproject] = useState(false);
-  const [task, settask] = useState(false);
-  const [contact, setcontact] = useState(false);
-  const [blog, setBlog] = useState(false);
-  const [component, setcomponent] = useState(false);
-  const [form, setform] = useState(false);
-  const [table, settable] = useState(false);
-  const [chart, setchart] = useState(false);
-  const [icon, seticon] = useState(false);
-  const [map, setmap] = useState(false);
-  const [extra, setextra] = useState(false);
-  const [invoice, setinvoice] = useState(false);
-  const [auth, setauth] = useState(false);
-  const [utility, setutility] = useState(false);
+  const [dashboard, setdashboard] = useState(false)
 
   useEffect(() => {
-    var matchingMenuItem = null;
-    var ul = document.getElementById("navigation");
-    var items = ul.getElementsByTagName("a");
+    var matchingMenuItem = null
+    var ul = document.getElementById("navigation")
+    var items = ul.getElementsByTagName("a")
     for (var i = 0; i < items.length; ++i) {
       if (props.location.pathname === items[i].pathname) {
-        matchingMenuItem = items[i];
-        break;
+        matchingMenuItem = items[i]
+        break
       }
     }
     if (matchingMenuItem) {
-      activateParentDropdown(matchingMenuItem);
+      activateParentDropdown(matchingMenuItem)
     }
-  });
+  })
   function activateParentDropdown(item) {
-    item.classList.add("active");
-    const parent = item.parentElement;
+    item.classList.add("active")
+    const parent = item.parentElement
     if (parent) {
-      parent.classList.add("active"); // li
-      const parent2 = parent.parentElement;
-      parent2.classList.add("active"); // li
-      const parent3 = parent2.parentElement;
+      parent.classList.add("active") // li
+      const parent2 = parent.parentElement
+      parent2.classList.add("active") // li
+      const parent3 = parent2.parentElement
       if (parent3) {
-        parent3.classList.add("active"); // li
-        const parent4 = parent3.parentElement;
+        parent3.classList.add("active") // li
+        const parent4 = parent3.parentElement
         if (parent4) {
-          parent4.classList.add("active"); // li
-          const parent5 = parent4.parentElement;
+          parent4.classList.add("active") // li
+          const parent5 = parent4.parentElement
           if (parent5) {
-            parent5.classList.add("active"); // li
-            const parent6 = parent5.parentElement;
+            parent5.classList.add("active") // li
+            const parent6 = parent5.parentElement
             if (parent6) {
-              parent6.classList.add("active"); // li
+              parent6.classList.add("active") // li
             }
           }
         }
       }
     }
-    return false;
+    return false
   }
- let handleLogout=()=>{
-  logoutUser()
- }
+  let handleLogout = () => {
+    logoutUser()
+  }
   // return (
   //   <React.Fragment>
   //     <div className="topnav">
@@ -109,11 +89,10 @@ const Navbar = props => {
   //                   <Link to="/dashboard" className="dropdown-item">
   //                     {props.t("Default")}
   //                   </Link>
-                   
+
   //                 </div> */}
   //               </li>
 
-                
   //             </ul>
   //           </Collapse>
   //         </nav>
@@ -138,11 +117,11 @@ const Navbar = props => {
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
-                    onClick={e => {
-                      e.preventDefault();
-                      setdashboard(!dashboard);
-                    }}
-                    to="/dashboard"
+                    // onClick={e => {
+                    //   e.preventDefault();
+                    //   setdashboard(!dashboard);
+                    // }}
+                    to={"/dashboard"}
                   >
                     <i className="bx bx-home-circle me-2"></i>
                     {props.t("Dashboard")} {props.menuOpen}
@@ -156,35 +135,66 @@ const Navbar = props => {
                     </Link>
                   </div> */}
                 </li>
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle arrow-none"
+                    to="/pledge-users"
+                  >
+                    <i className="bx bx-user me-2"></i>
+                    {props.t("Users")} {props.menuOpen}
+                  </Link>
+                </li>
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle arrow-none"
+                    to="/site-view"
+                  >
+                    <i className="bx bx-notepad me-2"></i>
+                    {props.t("SiteView")} {props.menuOpen}
+                  </Link>
+                </li>
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle arrow-none"
+                    to="/location-view"
+                  >
+                    <i className="bx bx-map-pin me-2"></i>
+                    {props.t("LocationView")} {props.menuOpen}
+                  </Link>
+                </li>
+              </ul>
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item dropdown">
+                  <Link
+                    to="/logout"
+                    className="nav-link"
+                    onClick={handleLogout}
+                  >
+                    <i className="bx bx-log-out-circle me-2"></i>
+                    Logout
+                  </Link>
+                </li>
               </ul>
             </Collapse>
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link to="/logout" className="nav-link" onClick={handleLogout}>
-                  Logout
-                </Link>
-              </li>
-            </ul>
           </nav>
         </div>
       </div>
     </React.Fragment>
-  );
-  
-};
+  )
+}
 
 Navbar.propTypes = {
   leftMenu: PropTypes.any,
   location: PropTypes.any,
   menuOpen: PropTypes.any,
   t: PropTypes.any,
-};
+}
 
 const mapStatetoProps = state => {
-  const { leftMenu } = state.Layout;
-  return { leftMenu };
-};
+  const { leftMenu } = state.Layout
+  return { leftMenu }
+}
 
 export default withRouter(
   connect(mapStatetoProps, {})(withTranslation()(Navbar))
-);
+)
