@@ -197,6 +197,9 @@ export const getSitePagination = (page,sizePerPage) => get(`${url.GET_SITE}?pagi
 export const getSite = () => get(url.GET_SITE)
 export const getSiteFilter = (data) => get(`${url.GET_SITE}?filters[location][$startsWith]=${data}`)
 export const addNewSite = user => post(url.CREATE_SITE, user)
+
+// upload
+export const addNewImage = data => post(url.CREATE_UPLOAD, {data})
 // get contacts
 export const getUsers = () => get(url.GET_USERS)
 // add user

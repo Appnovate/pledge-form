@@ -8,7 +8,6 @@ import {
   Container,
   Form,
   FormFeedback,
-  FormGroup,
   Input,
   Label,
   Row,
@@ -16,52 +15,59 @@ import {
 import * as Yup from "yup"
 import Swal from "sweetalert2"
 // import Dropzone from "react-dropzone"
-import { addNewSite } from "helpers/fakebackend_helper"
+import { addNewImage, addNewSite } from "helpers/fakebackend_helper"
+import axios from "axios"
 function index() {
   const [isLoading, setIsLoading] = useState(false)
+  // const [image, setImage] = useState([])
   // const [data, setData] = useState({})
   // const [redirectToUserView, setRedirectToUserView] = useState(false)
+  const [lan, setLan] = useState()
+  const [lon, setLon] = useState()
 
   let history = useHistory()
-
+  // console.log(image);
+  // Get the JWT token
   const formik = useFormik({
     initialValues: {
       siteName: "",
       agentName: "",
       location: "",
       notes: "",
-      status: false,
+      status: "pending",
       products: "",
+      siteLocation: { Latitude: "667", Longtitude: "76.14077479892086" },
     },
     validationSchema: Yup.object().shape({
       siteName: Yup.string().required("Please Enter Your Name"),
       location: Yup.string().required("Please Enter location"),
     }),
     onSubmit: async values => {
-      console.log(values)
+      if (lan && lon) {
+        values.latitude = lan
+        values.longitude = lon
+      }
+      console.log(values.image);
       setIsLoading(true)
       try {
-        // let formData = new FormData();
-        // formData.append('data', JSON.stringify(values));
-        // if (values.photo) {
-        //     formData.append('files.photo', values.photo[0]);
-        // } else {
-        //     formData.append('files.photo', ''); // Append empty string if photo is not provided
-        // }
-        // console.log("formData", formData);
-        // // Use the correct endpoint for uploading files
-        // let response = await fetch('http://localhost:1337/api/upload', {
-        //     method: 'post',
-        //     body: formData
-        // });
-        // console.log("response",response);
         let response = await addNewSite({ data: values })
-        console.log("response", response)
+        
+        const formdata = new FormData()
+          formdata.append("files",values.image )
+          formdata.append("refId", response.data.id)
+        if (response && formdata.has("files")) {
+          // let res = await axios.post(
+          //   "http://localhost:1337/api/upload",
+          //   formdata
+          // )
+          let res = await addNewImage(formdata);
+        }
+
         if (response) {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: "Successfully Plegde",
+            title: "Create Site Successfully",
             showConfirmButton: false,
             timer: 1500,
           })
@@ -82,27 +88,18 @@ function index() {
       }
     },
   })
-
-  const handleChange = files => {
-    if (files && files.length > 0) {
-      const file = files[0]
-      const formattedFile = Object.assign({}, file, {
-        preview: URL.createObjectURL(file),
-        formattedSize: formatBytes(file.size),
-      })
-      console.log(formattedFile)
-      // Use formattedFile or setFile(formattedFile) depending on your requirement
-    }
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(position => {
+      setLan(position.coords.latitude)
+      setLon(position.coords.longitude)
+    })
+  }, [])
+  let handleChange = e => {
+    const file = e.target.files[0]
+  //  setImage(e.target.files[0])
+   formik.setFieldValue("image",file)
   }
-  function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const dm = decimals < 0 ? 0 : decimals
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
 
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
-  }
   return (
     <React.Fragment>
       <div className="page-content">
@@ -186,11 +183,7 @@ function index() {
                         </div>
                       </Col>
                     </Row>
-                    {/* <div className="mt-4">
-                      <h5>
-                        Prize Images:<span className="text-danger"> *</span>
-                      </h5>
-                    </div> */}
+
                     <Row>
                       <Col lg={6}>
                         <div className="mt-4">
@@ -198,7 +191,7 @@ function index() {
                           <input
                             type="file"
                             onChange={e => {
-                              handleChange(e.target.files)
+                              handleChange(e)
                             }}
                           />
                         </div>
@@ -280,26 +273,24 @@ function index() {
                     <Row>
                       <Col>
                         <div className="mt-4">
-                          <FormGroup>
-                            <div className="form-check">
-                              <select className="form-control">
-                                <option>Select</option>
-                                <option>Large select</option>
-                                <option>Small select</option>
-                              </select>
-                              <Label
-                                className="form-check-label"
-                                htmlFor="invalidCheck"
-                              >
-                                Status
-                              </Label>
-                            </div>
-                          </FormGroup>
-                          {formik.touched.status && formik.errors.status ? (
-                            <FormFeedback type="invalid">
-                              {formik.errors.status}
-                            </FormFeedback>
-                          ) : null}
+                          <Label
+                            className="form-check-label"
+                            htmlFor="invalidCheck"
+                          >
+                            Status
+                          </Label>
+
+                          <select
+                            className="form-control"
+                            name="status"
+                            onChange={formik.handleChange}
+                            value={formik.values.status}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="quotation">Quotation</option>
+                            <option value="done">Done</option>
+                            <option value="canceled">Canceled</option>
+                          </select>
                         </div>
                       </Col>
                     </Row>

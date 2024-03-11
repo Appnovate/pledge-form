@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  CardTitle,
-  Badge,
-} from "reactstrap"
+import { Container, Row, Col, Card, Badge } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
 import paginationFactory from "react-bootstrap-table2-paginator"
@@ -25,6 +17,7 @@ function index() {
     try {
       let res = await getSitePagination(page, sizePerPage)
       setData(res.data)
+
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
@@ -41,7 +34,11 @@ function index() {
       dataAlign: "center",
       headerAlign: "center",
       formatter: (value, row, rowIndex) => {
-        return (<div className="text-center">{(currentPage - 1) * sizePerPage + (rowIndex + 1)}</div>)
+        return (
+          <div className="text-center">
+            {(currentPage - 1) * sizePerPage + (rowIndex + 1)}
+          </div>
+        )
       },
     },
 
@@ -53,13 +50,10 @@ function index() {
       formatter: (value, row) => {
         return (
           <>
-            <div className="text-center">
-              {value}
-            </div>
+            <div className="text-center">{value}</div>
           </>
         )
       },
-    
     },
     {
       dataField: "attributes.location",
@@ -68,9 +62,7 @@ function index() {
       formatter: (value, row) => {
         return (
           <>
-            <div className="text-center">
-              {value}
-            </div>
+            <div className="text-center">{value}</div>
           </>
         )
       },
@@ -82,9 +74,7 @@ function index() {
       formatter: (value, row) => {
         return (
           <>
-            <div className="text-center">
-              {value}
-            </div>
+            <div className="text-center">{value}</div>
           </>
         )
       },
@@ -96,15 +86,41 @@ function index() {
       formatter: (value, row) => {
         return (
           <>
-            {value ? (
-              <div className="text-success text-center">
-                <i className="bx bx-check-circle font-size-15"></i>
-              </div>
-            ) : (
-              <div className="text-danger text-center">
-                <i className="bx bx-x-circle font-size-15"></i>
-              </div>
-            )}
+            <div className="text-center">
+            {value === "pending" ? (
+              <Badge
+                className={"font-size-12 badge-soft-warning"}
+                color="warning"
+                pill
+              >
+                {value}
+              </Badge>
+            ) : value === "quotation" ? (
+              <Badge
+                className={"font-size-12 badge-soft-secondary"}
+                color="secondary"
+                pill
+              >
+                {value}
+              </Badge>
+            ) : value === "done" ? (
+              <Badge
+                className={"font-size-12 badge-soft-success"}
+                color="success"
+                pill
+              >
+                {value}
+              </Badge>
+            ) : value === "canceled" ? (
+              <Badge
+                className={"font-size-12 badge-soft-danger"}
+                color="danger"
+                pill
+              >
+                {value}
+              </Badge>
+            ) : null}
+            </div>
           </>
         )
       },

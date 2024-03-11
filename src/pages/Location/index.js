@@ -15,56 +15,81 @@ Leaflet.Icon.Default.mergeOptions({
 })
 
 function index() {
-  // const [data, setData] = useState([])
-  let data = [
-  
-    { lat: "7.935132801350605", lng: "76.14077479892086" },
-    { lat: "8.935132801350605", lng: "77.14077479892086" },
-    { lat: "9.935132801350605", lng: "78.14077479892086" },
-    { lat: "9.10", lng: "78.14077479892086" },
-    { lat: "9.20", lng: "78.14077479892086" },
-    { lat: "9.30", lng: "78.14077479892086" },
-  ]
-  // let getLocationData = async () => {
-  //   try {
-  //     let res = await getSite()
-  //     setData(res.data)
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-  // useEffect(() => {
-  //   getLocationData()
-  // }, [])
-  const bounds = data.map(item => [item.lat, item.lng]);
-  const position = [9.935132801350605, 78.14077479892086]
+  const [data, setData] = useState([])
+  // const [loading, setLoading] = useState(false);
+  console.log(data);
+  useEffect(() => {
+   
+
+    const getLocationData = async () => {
+      try {
+        // setLoading(!loading)
+        let res = await getSite()
+       
+          setData(res.data)
+         
+      
+      } catch (error) {
+        console.log("....",error.response)
+      }
+      // setLoading(!loading)
+    }
+
+    getLocationData()
+
+    
+  }, [])
+  let bounds = []
+  if (data.length > 0) {
+    bounds = data.map(item => [
+      item.attributes.latitude,
+      item.attributes.longitude,
+    ])
+  }
   return (
     <React.Fragment>
       <div className="page-content">
-        {/* <Container fluid> */}
-        {/* <Row>
-            <Col lg="12"> */}
-        <Card>
+        {/* {
+          loading ? (
+            <div id="preloader">
+              <div id="status">
+                <div className="spinner-chase">
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                  <div className="chase-dot" />
+                </div>
+              </div>
+            </div>
+          ):null} */}
+          {data.length>0?
+          <Card>
           <CardBody>
             <h4 className="card-title mb-4">Site Location</h4>
 
             <div id="leaflet-map" className="leaflet-map">
-              <Map bounds={bounds} zoom={13} style={{ height: "100%" }}>
+              <Map bounds ={bounds} zoom={13} style={{ height: "100%" }}>
                 <TileLayer
                   attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {data.map((item, index) => (
-                  <Marker key={index} position={[item.lat, item.lng]} />
-                ))}
+                { data.map((item, index) => (
+                      <Marker
+                        key={index}
+                        position={[
+                          item.attributes.latitude,
+                          item.attributes.longitude,
+                        ]}
+                      />
+                    ))
+                  }
               </Map>
             </div>
           </CardBody>
-        </Card>
-        {/* </Col>
-           
-          </Row> */}
-        {/* </Container> */}
+        </Card>:null
+        }
       </div>
     </React.Fragment>
   )
