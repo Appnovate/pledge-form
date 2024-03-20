@@ -43,33 +43,41 @@ function index() {
       siteName: Yup.string().required("Please Enter Your Name"),
       location: Yup.string().required("Please Enter location"),
     }),
-    onSubmit: async values => {
+    onSubmit: async (values) => {
       if (lan && lon) {
-        values.latitude = lan
-        values.longitude = lon
-        values.userId = userId
-      }else{
-        alert("trun no device location")
+        values.latitude = lan;
+        values.longitude = lon;
+        values.userId = userId;
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "info",
+          title: "Please turn on your location",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        return;
       }
-      setIsLoading(true)
+    
+      setIsLoading(true);
       try {
-        const formdata = new FormData()
-        formdata.append("files", values.image)
-
-        let imageId = null
+        const formdata = new FormData();
+        formdata.append("files", values.image);
+    
+        let imageId = null;
         if (values.image) {
           const response = await axios.post(
             "http://localhost:1337/api/upload",
             formdata
-          )
-          imageId = response.data[0].id
+          );
+          imageId = response.data[0].id;
         }
-
+    
         if (imageId) {
-          values.imageId = imageId
+          values.imageId = imageId;
         }
-
-        let res = await addNewSite({ data: values })
+    
+        let res = await addNewSite({ data: values });
         if (res) {
           Swal.fire({
             position: "center",
@@ -77,23 +85,24 @@ function index() {
             title: "Create Site Successfully",
             showConfirmButton: false,
             timer: 1500,
-          })
-          history.push("/site-view")
+          });
+          history.push("/site-view");
         }
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Error:", error);
         Swal.fire({
           position: "center",
           icon: "error",
           title: "An error occurred. Please try again later.",
           showConfirmButton: false,
           timer: 1500,
-        })
-        history.push("/dashboard")
+        });
+        history.push("/dashboard");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
+    
   })
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
