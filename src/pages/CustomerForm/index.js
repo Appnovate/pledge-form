@@ -15,19 +15,21 @@ import {
 import * as Yup from "yup"
 import Swal from "sweetalert2"
 // import Dropzone from "react-dropzone"
-import { addNewImage, addNewSite } from "helpers/fakebackend_helper"
+import { addNewSite, getUserId } from "helpers/fakebackend_helper"
 import axios from "axios"
 function index() {
   const [isLoading, setIsLoading] = useState(false)
   // const [image, setImage] = useState([])
-  // const [data, setData] = useState({})
+  const [userId, setUserId] = useState()
   // const [redirectToUserView, setRedirectToUserView] = useState(false)
   const [lan, setLan] = useState()
   const [lon, setLon] = useState()
 
   let history = useHistory()
-  // console.log(image);
-  // Get the JWT token
+  useEffect(async () => {
+    let res = await getUserId()
+    setUserId(res.id)
+  }, [])
   const formik = useFormik({
     initialValues: {
       siteName: "",
@@ -36,7 +38,6 @@ function index() {
       notes: "",
       status: "pending",
       products: "",
-      siteLocation: { Latitude: "667", Longtitude: "76.14077479892086" },
     },
     validationSchema: Yup.object().shape({
       siteName: Yup.string().required("Please Enter Your Name"),
@@ -46,24 +47,30 @@ function index() {
       if (lan && lon) {
         values.latitude = lan
         values.longitude = lon
+        values.userId = userId
+      }else{
+        alert("trun no device location")
       }
-      console.log(values.image);
       setIsLoading(true)
       try {
-        let response = await addNewSite({ data: values })
-        
         const formdata = new FormData()
-          formdata.append("files",values.image )
-          formdata.append("refId", response.data.id)
-        if (response && formdata.has("files")) {
-          // let res = await axios.post(
-          //   "http://localhost:1337/api/upload",
-          //   formdata
-          // )
-          let res = await addNewImage(formdata);
+        formdata.append("files", values.image)
+
+        let imageId = null
+        if (values.image) {
+          const response = await axios.post(
+            "http://localhost:1337/api/upload",
+            formdata
+          )
+          imageId = response.data[0].id
         }
 
-        if (response) {
+        if (imageId) {
+          values.imageId = imageId
+        }
+
+        let res = await addNewSite({ data: values })
+        if (res) {
           Swal.fire({
             position: "center",
             icon: "success",
@@ -96,8 +103,8 @@ function index() {
   }, [])
   let handleChange = e => {
     const file = e.target.files[0]
-  //  setImage(e.target.files[0])
-   formik.setFieldValue("image",file)
+    //  setImage(e.target.files[0])
+    formik.setFieldValue("image", file)
   }
 
   return (

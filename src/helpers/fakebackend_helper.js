@@ -191,7 +191,8 @@ export const getProjectsDetails = id =>
 export const getTasksPagination = (page,sizePerPage) => get(`${url.GET_TASKS}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
 export const getTasks = () => get(url.GET_TASKS)
 export const getTasksFilter = (data) => get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
-
+// get user id
+export const getUserId = () => get(url.USER_ID)
 // site
 export const getSitePagination = (page,sizePerPage) => get(`${url.GET_SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
 export const getSite = () => get(url.GET_SITE)
@@ -199,7 +200,7 @@ export const getSiteFilter = (data) => get(`${url.GET_SITE}?filters[location][$s
 export const addNewSite = user => post(url.CREATE_SITE, user)
 
 // upload
-export const addNewImage = data => post(url.CREATE_UPLOAD, {data})
+export const addNewImage = data => post(url.CREATE_UPLOAD, data)
 // get contacts
 export const getUsers = () => get(url.GET_USERS)
 // add user

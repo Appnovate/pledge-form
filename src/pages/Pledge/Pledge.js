@@ -34,7 +34,9 @@ function Pledge() {
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Please Enter Your Name"),
-      email: Yup.string().email("Please Enter a Valid Email").required("Please Enter Your Email"),
+      email: Yup.string()
+        .email("Please Enter a Valid Email")
+        .required("Please Enter Your Email"),
       phone: Yup.string()
         .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
         .required("Please Enter Your Mobile Number"),
@@ -44,20 +46,25 @@ function Pledge() {
       setIsLoading(true)
       try {
         let response = await axios.post(
-          `http://localhost:1337/api/pledge-users`,
-          { data: values }
+          `${process.env.REACT_APP_URL}/pledge-users`,
+          { data: values },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`
+            }
+          }
         )
         if (response) {
           if (response) {
             const userName = response.data.data.attributes.name
-            setUser(userName) 
+            setUser(userName)
             Swal.fire({
               position: "center",
               icon: "success",
               title: "Successfully Plegde",
               showConfirmButton: false,
-              timer: 1500
-            });
+              timer: 1500,
+            })
             history.push("/certificate", { userName })
           }
         }
@@ -69,8 +76,8 @@ function Pledge() {
             icon: "error",
             title: "User Already Register",
             showConfirmButton: false,
-            timer: 1500
-          });
+            timer: 1500,
+          })
           history.push("/pledgeIndex")
         } else {
           Swal.fire({
@@ -78,8 +85,8 @@ function Pledge() {
             icon: "error",
             title: "An error occurred. Please try again later.",
             showConfirmButton: false,
-            timer: 1500
-          });
+            timer: 1500,
+          })
           history.push("/pledgeIndex")
         }
       } finally {

@@ -82,7 +82,8 @@ export const GET_PROJECT_DETAIL = "/project"
 export const ADD_NEW_PROJECT = "/add/project"
 export const UPDATE_PROJECT = "/update/project"
 export const DELETE_PROJECT = "/delete/project"
-
+// USER
+export const USER_ID = "users/me"
 //TASKS
 export const GET_TASKS = "/pledge-users"
 //site
