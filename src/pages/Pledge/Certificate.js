@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useLocation, useHistory } from "react-router-dom"
 import { Container } from "reactstrap"
 import jsPDF from "jspdf"

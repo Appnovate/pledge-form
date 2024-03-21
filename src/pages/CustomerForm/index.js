@@ -14,14 +14,11 @@ import {
 } from "reactstrap"
 import * as Yup from "yup"
 import Swal from "sweetalert2"
-// import Dropzone from "react-dropzone"
 import { addNewSite, getUserId } from "helpers/fakebackend_helper"
 import axios from "axios"
 function index() {
   const [isLoading, setIsLoading] = useState(false)
-  // const [image, setImage] = useState([])
   const [userId, setUserId] = useState()
-  // const [redirectToUserView, setRedirectToUserView] = useState(false)
   const [lan, setLan] = useState()
   const [lon, setLon] = useState()
 
@@ -43,11 +40,11 @@ function index() {
       siteName: Yup.string().required("Please Enter Your Name"),
       location: Yup.string().required("Please Enter location"),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       if (lan && lon) {
-        values.latitude = lan;
-        values.longitude = lon;
-        values.userId = userId;
+        values.latitude = lan
+        values.longitude = lon
+        values.userId = userId
       } else {
         Swal.fire({
           position: "center",
@@ -55,29 +52,29 @@ function index() {
           title: "Please turn on your location",
           showConfirmButton: false,
           timer: 1500,
-        });
-        return;
+        })
+        return
       }
-    
-      setIsLoading(true);
+
+      setIsLoading(true)
       try {
-        const formdata = new FormData();
-        formdata.append("files", values.image);
-    
-        let imageId = null;
+        const formdata = new FormData()
+        formdata.append("files", values.image)
+
+        let imageId = null
         if (values.image) {
           const response = await axios.post(
             "http://localhost:1337/api/upload",
             formdata
-          );
-          imageId = response.data[0].id;
+          )
+          imageId = response.data[0].id
         }
-    
+
         if (imageId) {
-          values.imageId = imageId;
+          values.imageId = imageId
         }
-    
-        let res = await addNewSite({ data: values });
+
+        let res = await addNewSite({ data: values })
         if (res) {
           Swal.fire({
             position: "center",
@@ -85,24 +82,23 @@ function index() {
             title: "Create Site Successfully",
             showConfirmButton: false,
             timer: 1500,
-          });
-          history.push("/site-view");
+          })
+          history.push("/site-view")
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error:", error)
         Swal.fire({
           position: "center",
           icon: "error",
           title: "An error occurred. Please try again later.",
           showConfirmButton: false,
           timer: 1500,
-        });
-        history.push("/dashboard");
+        })
+        history.push("/dashboard")
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     },
-    
   })
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
@@ -137,11 +133,6 @@ function index() {
         )}
 
         <Container fluid>
-          {/* <div className="d-flex flex-column align-items-center justify-content-center">
-            <p className="display-6">Road Safety Pledge</p>
-            <p>Pledge for a Safer India!</p>
-          </div> */}
-
           <Row className="d-flex justify-content-center align-items-center mb-4 ">
             <Col lg={6}>
               <Card className="rounded-4">
@@ -212,52 +203,12 @@ function index() {
                           />
                         </div>
                       </Col>
-                      {/* <Col lg={6}>
-                        <div
-                          className="dropzone-previews mt-3"
-                          id="file-previews"
-                        >
-                          {/* {file.map((f, i) => {
-                            return (
-                              <Card
-                                className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-                                key={i + "-file"}
-                              >
-                                <div className="p-2">
-                                  <Row className="align-items-center">
-                                    <Col className="col-auto">
-                                      <img
-                                        data-dz-thumbnail=""
-                                        height="80"
-                                        className="avatar-sm rounded bg-light"
-                                        alt={f.name}
-                                        src={f.preview}
-                                      />
-                                    </Col>
-                                    <Col>
-                                      <Link
-                                        to="#"
-                                        className="text-muted font-weight-bold"
-                                      >
-                                        {f.name}
-                                      </Link>
-                                      <p className="mb-0">
-                                        <strong>{f.formattedSize}</strong>
-                                      </p>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              </Card>
-                            )
-                          })} */}
-                      {/* </div>
-                      </Col> */}
                     </Row>
                     <Row>
                       <Col>
                         <div className="mt-4">
                           <Label htmlFor="notes">Notes:</Label>
-                          {/* <div className="col-md-8"> */}
+
                           <Input
                             type="textarea"
                             id="description"
@@ -274,7 +225,7 @@ function index() {
                       <Col>
                         <div className="mt-4">
                           <Label htmlFor="notes">Agent Name:</Label>
-                          {/* <div className="col-md-8"> */}
+
                           <Input
                             className="form-control"
                             type="text"

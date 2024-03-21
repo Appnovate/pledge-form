@@ -197,6 +197,7 @@ export const getUserId = () => get(url.USER_ID)
 export const getSitePagination = (page,sizePerPage) => get(`${url.GET_SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
 export const getSite = () => get(url.GET_SITE)
 export const getSiteFilter = (data) => get(`${url.GET_SITE}?filters[location][$startsWith]=${data}`)
+export const getSiteFilterDate = (data) => get(`${url.GET_SITE}?filters[createdAt][$gte]=${data.formDateISO}&filters[createdAt][$lte]=${data.toDateISO}`)
 export const addNewSite = user => post(url.CREATE_SITE, user)
 
 // upload

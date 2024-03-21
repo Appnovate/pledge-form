@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useFormik } from "formik"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useHistory } from "react-router-dom"
 import {
   Card,
@@ -20,7 +20,6 @@ import Swal from "sweetalert2"
 function Pledge() {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({})
-  // const [redirectToUserView, setRedirectToUserView] = useState(false)
 
   let history = useHistory()
 
@@ -50,8 +49,8 @@ function Pledge() {
           { data: values },
           {
             headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`
-            }
+              Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`,
+            },
           }
         )
         if (response) {
@@ -114,9 +113,7 @@ function Pledge() {
         ) : (
           ""
         )}
-        {/* <MetaTags>
-        <title>Dashboard | Skote - React Admin & Dashboard Template</title>
-      </MetaTags> */}
+
         <Container fluid>
           <div className="d-flex flex-column align-items-center justify-content-center">
             <p className="display-6">Road Safety Pledge</p>
@@ -159,7 +156,7 @@ function Pledge() {
                       <Col>
                         <div className="mt-4">
                           <Label htmlFor="email">Email:*</Label>
-                          {/* <div className="col-md-8"> */}
+
                           <Input
                             className="form-control"
                             type="text"
@@ -178,7 +175,6 @@ function Pledge() {
                               {formik.errors.email}
                             </FormFeedback>
                           ) : null}
-                          {/* </div> */}
                         </div>
                       </Col>
                     </Row>

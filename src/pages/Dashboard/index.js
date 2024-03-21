@@ -5,13 +5,17 @@ import { Link } from "react-router-dom"
 function index() {
   const [totalCount, setTotalCount] = useState(0)
   const [totalSite, setTotalSite] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
   let getTasksData = async () => {
+    setIsLoading(true)
     try {
       let res = await getTasks()
 
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
   let getSiteData = async () => {
@@ -31,6 +35,22 @@ function index() {
   return (
     <React.Fragment>
       <div className="page-content">
+      {isLoading ? (
+          <div id="preloader">
+            <div id="status">
+              <div className="spinner-chase">
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         <Container fluid>
           <Row>
             <Col lg={12}>

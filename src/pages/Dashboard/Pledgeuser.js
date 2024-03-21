@@ -4,9 +4,6 @@ import {
   Row,
   Col,
   Card,
-  CardBody,
-  CardTitle,
-  Badge,
 } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
@@ -21,14 +18,17 @@ function Pledgeuser() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [filterProducts, setFilterProducts] = useState("")
-  const [filterProduct, setFilterProduct] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   let getCartData = async () => {
+    setIsLoading(true)
     try {
       let res = await getTasksPagination(page, sizePerPage)
       setData(res.data)
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
   useEffect(() => {
@@ -45,10 +45,7 @@ function Pledgeuser() {
         return (currentPage - 1) * sizePerPage + (rowIndex + 1)
       },
     },
-    {
-      dataField: "id",
-      text: "UserId",
-    },
+   
     {
       dataField: "attributes.name",
       text: "Name",
@@ -120,13 +117,15 @@ function Pledgeuser() {
   ]
   let getFilterData = async () => {
     try {
-      
+      setIsLoading(true)
         let res = await getTasksFilter(filterProducts)
       setData(res.data)
       setTotalCount(res.meta.pagination.total)
      
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
   
@@ -150,9 +149,24 @@ function Pledgeuser() {
   return (
     <React.Fragment>
       <div className="page-content">
+      {isLoading ? (
+          <div id="preloader">
+            <div id="status">
+              <div className="spinner-chase">
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         <Container fluid>
-          {/* <Row>
-            <Col lg={12}> */}
+        
           <Row>
             <Col>
               <Card>
@@ -247,8 +261,7 @@ function Pledgeuser() {
               </Card>
             </Col>
           </Row>
-          {/* </Col>
-          </Row> */}
+          
         </Container>
       </div>
     </React.Fragment>

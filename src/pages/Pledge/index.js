@@ -8,7 +8,7 @@ function index() {
         <React.Fragment>
           <div className="page-content">
             <MetaTags>
-              {/* <title>Dashboard | Skote - React Admin & Dashboard Template</title> */}
+             
             </MetaTags>
             <Container fluid>
               <div className="d-flex flex-column align-items-center justify-content-center">
@@ -18,8 +18,7 @@ function index() {
               </div>
             </Container>
           </div>
-          {/* <h4>Dashboard</h4> */}
-          {/* style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; */}
+          
         </React.Fragment>
       )
 }

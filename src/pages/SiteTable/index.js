@@ -13,7 +13,9 @@ function index() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [filterProducts, setFilterProducts] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   let getCartData = async () => {
+    setIsLoading(true)
     try {
       let res = await getSitePagination(page, sizePerPage)
       setData(res.data)
@@ -21,6 +23,8 @@ function index() {
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
   useEffect(() => {
@@ -87,39 +91,39 @@ function index() {
         return (
           <>
             <div className="text-center">
-            {value === "pending" ? (
-              <Badge
-                className={"font-size-12 badge-soft-warning"}
-                color="warning"
-                pill
-              >
-                {value}
-              </Badge>
-            ) : value === "quotation" ? (
-              <Badge
-                className={"font-size-12 badge-soft-secondary"}
-                color="secondary"
-                pill
-              >
-                {value}
-              </Badge>
-            ) : value === "done" ? (
-              <Badge
-                className={"font-size-12 badge-soft-success"}
-                color="success"
-                pill
-              >
-                {value}
-              </Badge>
-            ) : value === "canceled" ? (
-              <Badge
-                className={"font-size-12 badge-soft-danger"}
-                color="danger"
-                pill
-              >
-                {value}
-              </Badge>
-            ) : null}
+              {value === "pending" ? (
+                <Badge
+                  className={"font-size-12 badge-soft-warning"}
+                  color="warning"
+                  pill
+                >
+                  {value}
+                </Badge>
+              ) : value === "quotation" ? (
+                <Badge
+                  className={"font-size-12 badge-soft-secondary"}
+                  color="secondary"
+                  pill
+                >
+                  {value}
+                </Badge>
+              ) : value === "done" ? (
+                <Badge
+                  className={"font-size-12 badge-soft-success"}
+                  color="success"
+                  pill
+                >
+                  {value}
+                </Badge>
+              ) : value === "canceled" ? (
+                <Badge
+                  className={"font-size-12 badge-soft-danger"}
+                  color="danger"
+                  pill
+                >
+                  {value}
+                </Badge>
+              ) : null}
             </div>
           </>
         )
@@ -156,12 +160,15 @@ function index() {
     },
   ]
   let getFilterData = async () => {
+    setIsLoading(true)
     try {
       let res = await getSiteFilter(filterProducts)
       setData(res.data)
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
 
@@ -185,9 +192,23 @@ function index() {
   return (
     <React.Fragment>
       <div className="page-content">
+      {isLoading ? (
+          <div id="preloader">
+            <div id="status">
+              <div className="spinner-chase">
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+                <div className="chase-dot" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         <Container fluid>
-          {/* <Row>
-            <Col lg={12}> */}
           <Row>
             <Col>
               <Card>
@@ -282,8 +303,6 @@ function index() {
               </Card>
             </Col>
           </Row>
-          {/* </Col>
-          </Row> */}
         </Container>
       </div>
     </React.Fragment>
