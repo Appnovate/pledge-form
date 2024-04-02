@@ -188,17 +188,42 @@ export const getProjectsDetails = id =>
   get(`${url.GET_PROJECT_DETAIL}/${id}`, { params: { id } })
 
 // get tasks
-export const getTasksPagination = (page,sizePerPage) => get(`${url.GET_TASKS}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
+export const getTasksPagination = (page, sizePerPage) =>
+  get(
+    `${url.GET_TASKS}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`
+  )
 export const getTasks = () => get(url.GET_TASKS)
-export const getTasksFilter = (data) => get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
+export const getTasksFilter = data =>
+  get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
 // get user id
 export const getUserId = () => get(url.USER_ID)
 // site
-export const getSitePagination = (page,sizePerPage) => get(`${url.GET_SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`)
-export const getSite = () => get(url.GET_SITE)
-export const getSiteFilter = (data) => get(`${url.GET_SITE}?filters[location][$startsWith]=${data}`)
-export const getSiteFilterDate = (data) => get(`${url.GET_SITE}?filters[createdAt][$gte]=${data.formDateISO}&filters[createdAt][$lte]=${data.toDateISO}`)
-export const addNewSite = user => post(url.CREATE_SITE, user)
+export const getSitePagenation = (data, page, sizePerPage) => {
+  let endpoint = `${url.SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`
+
+  if (data) {
+    endpoint += `&filters[userId][$eq]=${data}`
+  }
+
+  return get(endpoint)
+}
+export const getSite = (data) => {
+  let endpoint = url.SITE
+  if(data){
+    endpoint +=`?filters[userId][$eq]=${data}`
+  }
+  return get(endpoint)
+}
+export const getSiteById = data => get(`${url.SITE}/${data}`)
+export const getSiteFilter = data =>
+  get(`${url.SITE}?filters[location][$startsWith]=${data}`)
+export const getSiteFilterDate = (fromDate, toDate) =>
+  get(
+    `${url.SITE}?filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
+  )
+export const addNewSite = user => post(url.SITE, user)
+export const editSite = (data, user) => put(`${url.SITE}/${data}`, user)
+export const deleteSite = data => del(`${url.SITE}/${data}`)
 
 // upload
 export const addNewImage = data => post(url.CREATE_UPLOAD, data)

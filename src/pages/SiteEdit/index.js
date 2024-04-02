@@ -1,6 +1,6 @@
 import { useFormik } from "formik"
 import React, { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import {
   Card,
   CardBody,
@@ -14,17 +14,23 @@ import {
 } from "reactstrap"
 import * as Yup from "yup"
 import Swal from "sweetalert2"
-import { addNewSite } from "helpers/fakebackend_helper"
+import { editSite, getSiteById, getUserId } from "helpers/fakebackend_helper"
 import axios from "axios"
 import { useAuthContext } from "context/AuthContext"
+
 function index() {
   const { user } = useAuthContext()
+  let params = useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [data, setData] = useState()
   const [lan, setLan] = useState()
   const [lon, setLon] = useState()
 
   let history = useHistory()
-
+  useEffect(async () => {
+    let res = await getSiteById(params.id)
+    formik.setValues(res.data.attributes)
+  }, [])
   const formik = useFormik({
     initialValues: {
       siteName: "",
@@ -72,12 +78,12 @@ function index() {
           values.imageId = imageId
         }
 
-        let res = await addNewSite({ data: values })
+        let res = await editSite(params.id,{ data: values })
         if (res) {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: "Create Site Successfully",
+            title: "Edited Site Successfully",
             showConfirmButton: false,
             timer: 1500,
           })

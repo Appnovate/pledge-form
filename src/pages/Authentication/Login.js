@@ -28,9 +28,12 @@ import logo from "assets/images/logo.svg"
 //Import config
 import axios from "axios"
 import { useHistory } from "react-router-dom"
+import { useAuthContext } from "context/AuthContext"
+import { getUserId } from "helpers/fakebackend_helper"
 
 const Login = props => {
   let history = useHistory()
+  const { setUser } = useAuthContext()
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [registrationError, setRegistrationError] = useState("")
   const validation = useFormik({
@@ -51,13 +54,19 @@ const Login = props => {
           identifier: values.email,
           password: values.password,
         })
-      
         if (res.status === 200) {
           setRegistrationSuccess("Login successfully")
           localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
+          let response = await getUserId()
+          if (response?.role?.type) {
+            setUser(response.role.type);
+          }  else {
+            setUser(response);
+          }
+          
           setTimeout(() => {
             history.replace("/dashboard")
-          }, 1000)
+          }, 500)
         }
       } catch (error) {
         if (error.response) {

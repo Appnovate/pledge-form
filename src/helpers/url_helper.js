@@ -83,13 +83,11 @@ export const ADD_NEW_PROJECT = "/add/project"
 export const UPDATE_PROJECT = "/update/project"
 export const DELETE_PROJECT = "/delete/project"
 // USER
-export const USER_ID = "users/me"
+export const USER_ID = "users/me?populate=*"
 //TASKS
 export const GET_TASKS = "/pledge-users"
 //site
-export const GET_SITE = "/costomers"
-
-export const CREATE_SITE = "/costomers"
+export const SITE = "/costomers"
 //upload
 export const CREATE_UPLOAD = "/upload"
 

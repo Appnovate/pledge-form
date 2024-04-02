@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { Container, Row, Col, Card, Badge } from "reactstrap"
+import { Container, Row, Col, Card, Badge, Button } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
 import paginationFactory from "react-bootstrap-table2-paginator"
-import { getSiteFilter, getSitePagination } from "helpers/fakebackend_helper"
+import { getSiteFilter, getSitePagenation } from "helpers/fakebackend_helper"
+import { useAuthContext } from "context/AuthContext"
+import { Link } from "react-router-dom"
 
 function index() {
+  const { user } = useAuthContext()
   const [data, setData] = useState([])
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -17,19 +20,27 @@ function index() {
   let getCartData = async () => {
     setIsLoading(true)
     try {
-      let res = await getSitePagination(page, sizePerPage)
-      setData(res.data)
+      let res
+      if (user === "admin") {
+        res = await getSitePagenation(null, page, sizePerPage)
+      } else if (user.id) {
+        res = await getSitePagenation(user.id, page, sizePerPage)
+      }
 
-      setTotalCount(res.meta.pagination.total)
+      if (res) {
+        setData(res.data)
+        setTotalCount(res.meta.pagination.total)
+      }
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setIsLoading(false)
     }
   }
+
   useEffect(() => {
     getCartData()
-  }, [page, sizePerPage])
+  }, [user, page, sizePerPage])
 
   let columns = [
     {
@@ -158,6 +169,31 @@ function index() {
         )
       },
     },
+    {
+      dataField: "action",
+      text: "Action",
+      headerAlign: "center",
+      formatter: (value, row) => {
+        return (
+          <>
+            <div className="d-flex justify-content-center gap-2">
+              <Link to={`/site-edit/${row.id}`}>
+                <div className="text-center">
+                  {" "}
+                  <i className="bx bxs-edit font-size-16 align-middle text-primary"></i>
+                </div>
+              </Link>
+              <Link to={`/site-delete/${row.id}`}>
+                <div className="text-center">
+                  {" "}
+                  <i className="bx bxs-trash font-size-16 align-middle text-danger"></i>
+                </div>
+              </Link>
+            </div>
+          </>
+        )
+      },
+    },
   ]
   let getFilterData = async () => {
     setIsLoading(true)
@@ -167,7 +203,7 @@ function index() {
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setIsLoading(false)
     }
   }
@@ -192,7 +228,7 @@ function index() {
   return (
     <React.Fragment>
       <div className="page-content">
-      {isLoading ? (
+        {isLoading ? (
           <div id="preloader">
             <div id="status">
               <div className="spinner-chase">
@@ -261,45 +297,53 @@ function index() {
                     </div>
                   </Col>
                 </Row>
-                <Row>
-                  <Col lg={12}>
-                    <div className="m-2">
-                      <BootstrapTable
-                        remote
-                        striped
-                        hover
-                        keyField="id"
-                        data={data}
-                        columns={columns}
-                        classes={"table align-middle table-wrap"}
-                        bordered={true}
-                        wrapperClasses="table-responsive"
-                        headerWrapperClasses={"thead-dark"}
-                        onTableChange={handleChange}
-                        pagination={paginationFactory({
-                          page,
-                          sizePerPage,
-                          totalSize: totalCount,
-                          showTotal: true,
-                          sizePerPageList: [
-                            {
-                              text: "5",
-                              value: 5,
-                            },
-                            {
-                              text: "10",
-                              value: 10,
-                            },
-                            {
-                              text: "15",
-                              value: 15,
-                            },
-                          ],
-                        })}
-                      />
+                
+                  {data ? (
+                    <Row>
+                    <Col lg={12}>
+                      <div className="m-2">
+                        <BootstrapTable
+                          remote
+                          striped
+                          hover
+                          keyField="id"
+                          data={data}
+                          columns={columns}
+                          classes={"table align-middle table-wrap"}
+                          bordered={true}
+                          wrapperClasses="table-responsive"
+                          headerWrapperClasses={"thead-dark"}
+                          onTableChange={handleChange}
+                          pagination={paginationFactory({
+                            page,
+                            sizePerPage,
+                            totalSize: totalCount,
+                            showTotal: true,
+                            sizePerPageList: [
+                              {
+                                text: "5",
+                                value: 5,
+                              },
+                              {
+                                text: "10",
+                                value: 10,
+                              },
+                              {
+                                text: "15",
+                                value: 15,
+                              },
+                            ],
+                          })}
+                        />
+                      </div>
+                    </Col>
+                    </Row>
+                  ) : (
+                    <div className="alert alert-danger" role="alert">
+                      No data available.
                     </div>
-                  </Col>
-                </Row>
+                  )}
+                
               </Card>
             </Col>
           </Row>

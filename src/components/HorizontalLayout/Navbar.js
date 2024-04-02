@@ -1,17 +1,17 @@
 import PropTypes from "prop-types"
-import React, { useState, useEffect } from "react"
-import { Row, Col, Collapse } from "reactstrap"
+import React, { useEffect } from "react"
+import { Collapse } from "reactstrap"
 import { Link, withRouter } from "react-router-dom"
-import classname from "classnames"
 
 //i18n
 import { withTranslation } from "react-i18next"
 
 import { connect } from "react-redux"
 import { logoutUser } from "store/actions"
+import { useAuthContext } from "context/AuthContext"
 
 const Navbar = props => {
-  const [dashboard, setdashboard] = useState(false)
+  const { setUser } = useAuthContext()
 
   useEffect(() => {
     var matchingMenuItem = null
@@ -55,6 +55,7 @@ const Navbar = props => {
   }
   let handleLogout = () => {
     logoutUser()
+    setUser("")
   }
   // return (
   //   <React.Fragment>

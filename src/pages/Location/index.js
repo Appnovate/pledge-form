@@ -6,6 +6,7 @@ import "../../../node_modules/leaflet/dist/leaflet.css"
 import { getSite, getSiteFilterDate } from "helpers/fakebackend_helper"
 import { useFormik } from "formik"
 import moment from "moment"
+import { useAuthContext } from "context/AuthContext"
 Leaflet.Icon.Default.imagePath = "../node_modules/leaflet"
 
 delete Leaflet.Icon.Default.prototype._getIconUrl
@@ -16,25 +17,24 @@ Leaflet.Icon.Default.mergeOptions({
 })
 
 function index() {
+  const { user } = useAuthContext()
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const formik = useFormik({
     initialValues: {
-      formDate: "",
+      fromDate: "",
       toDate: "",
     },
 
     onSubmit: async values => {
       setIsLoading(true)
-      const formDate = moment(values.formDate).format(
-        "YYYY-MM-DDTHH:mm:ss.SSSZ"
-      )
-      const toDate = moment(values.toDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-      
-      const formDateISO = moment(formDate).toISOString()
-      const toDateISO = moment(toDate).toISOString()
+      const fromDate = moment(values.fromDate).format("YYYY-MM-DD")
+      const toDate = moment(values.toDate).format("YYYY-MM-DD")
+
+      const fromDateISO = moment.utc(fromDate).toISOString()
+      const toDateISO = moment.utc(toDate).toISOString()
       try {
-        let res = await getSiteFilterDate({ formDateISO, toDateISO })
+        let res = await getSiteFilterDate(fromDateISO, toDateISO)
         setData(res.data)
       } catch (error) {
         console.error("Error:", error)
@@ -47,9 +47,15 @@ function index() {
     setIsLoading(true)
     const getLocationData = async () => {
       try {
-        let res = await getSite()
-
-        setData(res.data)
+        let res
+        if (user === "admin") {
+          res = await getSite()
+        } else if (user.id) {
+          res = await getSite(user.id)
+        }
+        if (res) {
+          setData(res.data)
+        }
       } catch (error) {
         console.log(error)
       } finally {
@@ -58,7 +64,7 @@ function index() {
     }
 
     getLocationData()
-  }, [])
+  }, [user])
   let bounds = []
   if (data.length > 0) {
     bounds = data.map(item => [
@@ -92,12 +98,12 @@ function index() {
               <Row className="">
                 <Col>
                   <div className="my-2">
-                    <Label htmlFor="siteName">Form Date:</Label>
+                    <Label htmlFor="siteName">From Date:</Label>
                     <Input
                       className="form-control"
                       type="date"
-                      name="formDate"
-                      value={formik.values.formDate}
+                      name="fromDate"
+                      value={formik.values.fromDate}
                       onChange={formik.handleChange}
                     />
                   </div>

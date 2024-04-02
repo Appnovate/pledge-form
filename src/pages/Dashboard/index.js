@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react"
 import { Container, Row, Col, Card, CardBody } from "reactstrap"
 import { getSite, getTasks } from "helpers/fakebackend_helper"
 import { Link } from "react-router-dom"
+import { useAuthContext } from "context/AuthContext"
 function index() {
+  const { user } = useAuthContext()
   const [totalCount, setTotalCount] = useState(0)
   const [totalSite, setTotalSite] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -14,15 +16,20 @@ function index() {
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setIsLoading(false)
     }
   }
   let getSiteData = async () => {
     try {
-      let res = await getSite()
-
-      setTotalSite(res.meta.pagination.total)
+      if (user === "admin") {
+        let res = await getSite()
+        console.log();
+        setTotalSite(res.meta.pagination.total)
+      } else if (user && user.id) { // Add null check for user and user.id
+        let res = await getSite(user.id)
+        setTotalSite(res.meta.pagination.total)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -30,12 +37,12 @@ function index() {
   useEffect(() => {
     getTasksData()
     getSiteData()
-  }, [])
+  }, [user])
 
   return (
     <React.Fragment>
       <div className="page-content">
-      {isLoading ? (
+        {isLoading ? (
           <div id="preloader">
             <div id="status">
               <div className="spinner-chase">
@@ -74,7 +81,7 @@ function index() {
                     </Card>
                   </Link>
                 </Col>
-              
+
                 <Col lg="4">
                   <Link to={"/create-site"}>
                     <Card className="mini-stats-wid">
