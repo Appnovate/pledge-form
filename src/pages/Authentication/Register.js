@@ -24,10 +24,12 @@ import profileImg from "../../assets/images/profile-img.png"
 import logoImg from "../../assets/images/logo.svg"
 import axios from "axios"
 import { useHistory } from "react-router-dom"
+import { getUserId } from "helpers/fakebackend_helper"
+import { useAuthContext } from "context/AuthContext"
 
 const Register = props => {
   let history = useHistory()
-  const [user, setUser] = useState(false)
+  const { user, setUser } = useAuthContext()
   const [registrationError, setRegistrationError] = useState("")
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -51,8 +53,11 @@ const Register = props => {
         )
 
         if (res.status === 200) {
-          setUser(true)
           localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
+          let response = await getUserId()
+          if (response) {
+            setUser(response.role.type)
+          }
           setTimeout(() => {
             history.replace("/dashboard")
           }, 1000)
@@ -72,7 +77,7 @@ const Register = props => {
   return (
     <React.Fragment>
       <MetaTags>
-        <title>Register | Skote - React Admin & Dashboard Template</title>
+        {/* <title>Register | Skote - React Admin & Dashboard Template</title> */}
       </MetaTags>
       <div className="home-btn d-none d-sm-block">
         <Link to="/" className="text-dark">

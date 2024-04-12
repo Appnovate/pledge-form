@@ -14,23 +14,47 @@ import {
 } from "reactstrap"
 import * as Yup from "yup"
 import Swal from "sweetalert2"
-import { editSite, getSiteById, getUserId } from "helpers/fakebackend_helper"
+import {
+  deleteImage,
+  editSite,
+  getImageById,
+  getSiteById,
+} from "helpers/fakebackend_helper"
 import axios from "axios"
 import { useAuthContext } from "context/AuthContext"
-
+import defaultImage from "assets/images/default.jpg"
 function index() {
   const { user } = useAuthContext()
   let params = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState()
+  const [imagePath, setImagePath] = useState(null)
   const [lan, setLan] = useState()
   const [lon, setLon] = useState()
-
+  const [files, setFiles] = useState([])
   let history = useHistory()
   useEffect(async () => {
-    let res = await getSiteById(params.id)
-    formik.setValues(res.data.attributes)
+    setIsLoading(true)
+    try {
+      let res = await getSiteById(params.id)
+      formik.setValues(res.data.attributes)
+      setData(res.data.attributes)
+    } catch (error) {
+      console.log(error)
+    }
   }, [])
+  useEffect(async () => {
+    try {
+      if (data && data.imageId) {
+        let response = await getImageById(data.imageId)
+        setImagePath(response)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [data])
   const formik = useFormik({
     initialValues: {
       siteName: "",
@@ -68,17 +92,21 @@ function index() {
         let imageId = null
         if (values.image) {
           const response = await axios.post(
-            "http://localhost:1337/api/upload",
+            `${process.env.REACT_APP_URL}/upload`,
             formdata
           )
           imageId = response.data[0].id
+          console.log(response)
+          if (response.status === 200) {
+            await deleteImage(data.imageId)
+          }
         }
 
         if (imageId) {
           values.imageId = imageId
         }
 
-        let res = await editSite(params.id,{ data: values })
+        let res = await editSite(params.id, { data: values })
         if (res) {
           Swal.fire({
             position: "center",
@@ -110,10 +138,25 @@ function index() {
       setLon(position.coords.longitude)
     })
   }, [])
-  let handleChange = e => {
-    const file = e.target.files[0]
-    //  setImage(e.target.files[0])
+  const handleChange = files => {
+    const filesArray = Array.from(files)
+    const formattedFiles = filesArray.map(file => ({
+      ...file,
+      preview: URL.createObjectURL(file),
+      formattedSize: formatBytes(file.size),
+    }))
+    setFiles(formattedFiles)
+    const file = files[0]
     formik.setFieldValue("image", file)
+  }
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
   }
 
   return (
@@ -201,10 +244,109 @@ function index() {
                           <Label htmlFor="location">Photo:</Label>
                           <input
                             type="file"
-                            onChange={e => {
-                              handleChange(e)
-                            }}
+                            onChange={e => handleChange(e.target.files)}
                           />
+                        </div>
+                      </Col>
+                      <Col lg={6}>
+                        <div
+                          className="dropzone-previews mt-4"
+                          id="file-previews"
+                        >
+                          {files.length > 0 ? (
+                            files.map((f, i) => (
+                              <Card
+                                className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
+                                key={i + "-file"}
+                              >
+                                <div className="p-2">
+                                  <Row className="align-items-center">
+                                    <Col className="col-auto">
+                                      <img
+                                        data-dz-thumbnail=""
+                                        height="80"
+                                        className="avatar-sm rounded bg-light"
+                                        alt={f.name}
+                                        src={f.preview}
+                                      />
+                                    </Col>
+                                    <Col>
+                                      {/* <Link 
+                                        to="#"
+                                        className="text-muted font-weight-bold"
+                                      >
+                                        {f.name}
+                                      </Link> */}
+                                      <p className="mb-0">
+                                        <strong>{f.formattedSize}</strong>
+                                      </p>
+                                    </Col>
+                                  </Row>
+                                </div>
+                              </Card>
+                            ))
+                          ) : (
+                            <Card
+                              className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
+                              // key={i + "-file"}
+                            >
+                              <div className="p-2">
+                                <Row className="align-items-center">
+                                  {imagePath ? (
+                                    <>
+                                      <Col className="col-auto">
+                                        <img
+                                          src={imagePath.url}
+                                          alt={imagePath.name}
+                                          style={{
+                                            width: "50px",
+                                            height: "50px",
+                                          }}
+                                        />
+                                      </Col>
+                                      <Col>
+                                        {/* <Link 
+                                         to="#"
+                                         className="text-muted font-weight-bold"
+                                       >
+                                         {imagePath.name}
+                                       </Link>  */}
+                                        <p className="mb-0">
+                                          <strong>
+                                            {imagePath.size + "KB"}
+                                          </strong>
+                                        </p>
+                                      </Col>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Col className="col-auto">
+                                        <img
+                                          src={defaultImage}
+                                          alt=""
+                                          style={{
+                                            width: "50px",
+                                            height: "50px",
+                                          }}
+                                        />
+                                      </Col>
+                                      <Col>
+                                        {/* <Link 
+                                       to="#"
+                                       className="text-muted font-weight-bold"
+                                     >
+                                       {imagePath.name}
+                                     </Link> 
+                                    <p className="mb-0">
+                                     <strong>{imagePath.size}</strong>
+                                   </p>  */}
+                                      </Col>
+                                    </>
+                                  )}
+                                </Row>
+                              </div>
+                            </Card>
+                          )}
                         </div>
                       </Col>
                     </Row>

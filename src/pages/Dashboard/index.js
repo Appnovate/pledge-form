@@ -22,11 +22,10 @@ function index() {
   }
   let getSiteData = async () => {
     try {
-      if (user === "admin") {
+      if (user?.role?.type === "admin") {
         let res = await getSite()
-        console.log();
         setTotalSite(res.meta.pagination.total)
-      } else if (user && user.id) { // Add null check for user and user.id
+      } else if (user && user.id) {
         let res = await getSite(user.id)
         setTotalSite(res.meta.pagination.total)
       }

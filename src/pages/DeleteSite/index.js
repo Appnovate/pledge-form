@@ -1,4 +1,4 @@
-import { deleteSite } from "helpers/fakebackend_helper"
+import { deleteImage, deleteSite } from "helpers/fakebackend_helper"
 import React, { useEffect } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { Col, Container, Row } from "reactstrap"
@@ -22,7 +22,9 @@ function index() {
     if (result.isConfirmed) {
       try {
         const response = await deleteSite(params.id)
-
+        if (response && response.data.attributes.imageId) {
+          await deleteImage(response.data.attributes.imageId)
+        }
         await Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",

@@ -58,12 +58,10 @@ const Login = props => {
           setRegistrationSuccess("Login successfully")
           localStorage.setItem("authUser", JSON.stringify(res.data.jwt))
           let response = await getUserId()
-          if (response?.role?.type) {
-            setUser(response.role.type);
-          }  else {
-            setUser(response);
+          if (response) {
+            setUser(response)
           }
-          
+
           setTimeout(() => {
             history.replace("/dashboard")
           }, 500)
@@ -83,7 +81,7 @@ const Login = props => {
   return (
     <React.Fragment>
       <MetaTags>
-        <title>Login | Skote - React Admin & Dashboard Template</title>
+        {/* <title>Login | Skote - React Admin & Dashboard Template</title> */}
       </MetaTags>
       <div className="home-btn d-none d-sm-block">
         <Link to="/" className="text-dark">

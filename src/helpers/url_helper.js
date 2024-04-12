@@ -89,8 +89,11 @@ export const GET_TASKS = "/pledge-users"
 //site
 export const SITE = "/costomers"
 //upload
-export const CREATE_UPLOAD = "/upload"
+export const IMAGEID = "/upload/files"
 
+export const CREATE_IMAGE = "/upload"
+
+export const UPDATE_IMAGE = "/upload"
 //CONTACTS
 export const GET_USERS = "/users"
 export const GET_USER_PROFILE = "/user"

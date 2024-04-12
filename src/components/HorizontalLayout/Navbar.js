@@ -2,12 +2,12 @@ import PropTypes from "prop-types"
 import React, { useEffect } from "react"
 import { Collapse } from "reactstrap"
 import { Link, withRouter } from "react-router-dom"
-
+import { useDispatch } from "react-redux"
 //i18n
 import { withTranslation } from "react-i18next"
 
 import { connect } from "react-redux"
-import { logoutUser } from "store/actions"
+import { logoutUser, toggleLeftmenu } from "store/actions"
 import { useAuthContext } from "context/AuthContext"
 
 const Navbar = props => {
@@ -57,50 +57,11 @@ const Navbar = props => {
     logoutUser()
     setUser("")
   }
-  // return (
-  //   <React.Fragment>
-  //     <div className="topnav">
-  //       <div className="container-fluid">
-  //         <nav
-  //           className="navbar navbar-light navbar-expand-lg topnav-menu"
-  //           id="navigation"
-  //         >
-  //           <Collapse
-  //             isOpen={props.leftMenu}
-  //             className="navbar-collapse"
-  //             id="topnav-menu-content"
-  //           >
-  //             <ul className="navbar-nav">
-  //               <li className="nav-item dropdown">
-  //                 <Link
-  //                   className="nav-link dropdown-toggle arrow-none"
-  //                   onClick={e => {
-  //                     e.preventDefault();
-  //                     setdashboard(!dashboard);
-  //                   }}
-  //                   to="/dashboard"
-  //                 >
-  //                   <i className="bx bx-home-circle me-2"></i>
-  //                   {props.t("Dashboard")} {props.menuOpen}
-  //                   {/* <div className="arrow-down"></div> */}
-  //                 </Link>
-  //                 {/* <div
-  //                   className={classname("dropdown-menu", { show: dashboard })}
-  //                 >
-  //                   <Link to="/dashboard" className="dropdown-item">
-  //                     {props.t("Default")}
-  //                   </Link>
-
-  //                 </div> */}
-  //               </li>
-
-  //             </ul>
-  //           </Collapse>
-  //         </nav>
-  //       </div>
-  //     </div>
-  //   </React.Fragment>
-  // );
+  let dispatch = useDispatch()
+  let handler = () => {
+    dispatch(toggleLeftmenu())
+  }
+  
   return (
     <React.Fragment>
       <div className="topnav">
@@ -118,49 +79,52 @@ const Navbar = props => {
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
-                    // onClick={e => {
-                    //   e.preventDefault();
-                    //   setdashboard(!dashboard);
-                    // }}
+                    onClick={() => {
+                      
+                      handler()
+                    }}
                     to={"/dashboard"}
                   >
                     <i className="bx bx-home-circle me-2"></i>
                     {props.t("Dashboard")} {props.menuOpen}
                     {/* <div className="arrow-down"></div> */}
                   </Link>
-                  {/* <div
-                    className={classname("dropdown-menu", { show: dashboard })}
-                  >
-                    <Link to="/dashboard" className="dropdown-item">
-                      {props.t("Default")}
-                    </Link>
-                  </div> */}
+                  
                 </li>
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
                     to="/pledge-users"
+                    onClick={() => {
+                      handler()
+                    }}
                   >
                     <i className="bx bx-user me-2"></i>
-                    {props.t("Users")} {props.menuOpen}
+                    {props.t("Pledged Users")} {props.menuOpen}
                   </Link>
                 </li>
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
                     to="/site-view"
+                    onClick={() => {
+                      handler()
+                    }}
                   >
                     <i className="bx bx-notepad me-2"></i>
-                    {props.t("SiteView")} {props.menuOpen}
+                    {props.t("Site View")} {props.menuOpen}
                   </Link>
                 </li>
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
                     to="/location-view"
+                    onClick={() => {
+                      handler()
+                    }}
                   >
                     <i className="bx bx-map-pin me-2"></i>
-                    {props.t("LocationView")} {props.menuOpen}
+                    {props.t("Location View")} {props.menuOpen}
                   </Link>
                 </li>
               </ul>

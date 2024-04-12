@@ -21,6 +21,7 @@ import SiteTable from "../pages/SiteTable/index"
 import SiteEdit from "../pages/SiteEdit/index"
 import SiteDelete from "../pages/DeleteSite/index"
 import LocationView from "../pages/Location/index"
+import SiteView from "../pages/ViewSite/index"
 const authProtectedRoutes = [
   { path: "/dashboard", component: Dashboard },
   { path: "/pledge-users", component: Pledgeuser },
@@ -32,6 +33,8 @@ const authProtectedRoutes = [
   { path: "/site-edit/:id", component: SiteEdit},
   { path: "/site-delete/:id", component: SiteDelete},
   { path: "/location-view", component: LocationView},
+  { path: "/location-view", component: LocationView},
+  { path: "/site-view/:id", component: SiteView},
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },

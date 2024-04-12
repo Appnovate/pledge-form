@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { Container, Row, Col, Card, Badge, Button } from "reactstrap"
+import { Container, Row, Col, Card, Badge } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
 import paginationFactory from "react-bootstrap-table2-paginator"
 import { getSiteFilter, getSitePagenation } from "helpers/fakebackend_helper"
 import { useAuthContext } from "context/AuthContext"
 import { Link } from "react-router-dom"
+import ImageView from "./ImageView"
+import defaultImage from "assets/images/default.jpg"
 
 function index() {
   const { user } = useAuthContext()
@@ -21,9 +23,9 @@ function index() {
     setIsLoading(true)
     try {
       let res
-      if (user === "admin") {
+      if (user?.role?.type === "admin") {
         res = await getSitePagenation(null, page, sizePerPage)
-      } else if (user.id) {
+      } else if (user && user.id) {
         res = await getSitePagenation(user.id, page, sizePerPage)
       }
 
@@ -39,7 +41,10 @@ function index() {
   }
 
   useEffect(() => {
-    getCartData()
+    // Only call getCartData if user is defined
+    if (user) {
+      getCartData()
+    }
   }, [user, page, sizePerPage])
 
   let columns = [
@@ -56,7 +61,18 @@ function index() {
         )
       },
     },
-
+    {
+      dataField: "attributes.userName",
+      text: "Staff",
+      headerAlign: "center",
+      formatter: (value, row) => {
+        return (
+          <>
+            <div className="text-center">{value}</div>
+          </>
+        )
+      },
+    },
     {
       dataField: "attributes.siteName",
       text: "Site Name",
@@ -66,6 +82,34 @@ function index() {
         return (
           <>
             <div className="text-center">{value}</div>
+          </>
+        )
+      },
+    },
+    {
+      dataField: "attributes.imageId",
+      text: "Image",
+      dataAlign: "center",
+      headerAlign: "center",
+      formatter: (value, row) => {
+        const openImageInNewWindow = imagePath => {
+          if (imagePath) {
+            window.open(imagePath, "_blank")
+          }
+        }
+        return (
+          <>
+            {value ? (
+              <ImageView
+                data={value}
+                openImageInNewWindow={openImageInNewWindow}
+              />
+            ) : (
+              <img
+                style={{ width: "75px", height: "75px", cursor: "pointer" }}
+                src={defaultImage}
+              />
+            )}
           </>
         )
       },
@@ -82,18 +126,7 @@ function index() {
         )
       },
     },
-    {
-      dataField: "attributes.agentName",
-      text: "Agent Name",
-      headerAlign: "center",
-      formatter: (value, row) => {
-        return (
-          <>
-            <div className="text-center">{value}</div>
-          </>
-        )
-      },
-    },
+
     {
       dataField: "attributes.status",
       text: "Status",
@@ -198,7 +231,7 @@ function index() {
   let getFilterData = async () => {
     setIsLoading(true)
     try {
-      let res = await getSiteFilter(filterProducts)
+      let res = await getSiteFilter(user.id, filterProducts)
       setData(res.data)
       setTotalCount(res.meta.pagination.total)
     } catch (error) {
@@ -297,9 +330,9 @@ function index() {
                     </div>
                   </Col>
                 </Row>
-                
-                  {data ? (
-                    <Row>
+
+                {data ? (
+                  <Row>
                     <Col lg={12}>
                       <div className="m-2">
                         <BootstrapTable
@@ -337,13 +370,12 @@ function index() {
                         />
                       </div>
                     </Col>
-                    </Row>
-                  ) : (
-                    <div className="alert alert-danger" role="alert">
-                      No data available.
-                    </div>
-                  )}
-                
+                  </Row>
+                ) : (
+                  <div className="alert alert-danger" role="alert">
+                    No data available.
+                  </div>
+                )}
               </Card>
             </Col>
           </Row>

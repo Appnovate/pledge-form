@@ -4,17 +4,14 @@ import { getUserId } from "../../helpers/fakebackend_helper"
 import PropTypes from "prop-types"
 function AuthProvider({ children }) {
   const [userData, setUserData] = useState()
-  const [isLoading, setIsLoading] = useState()
+  const [isLoading, setIsLoading] = useState(false)
   const fetchLoggedInUser = async () => {
     try {
       setIsLoading(true)
       const response = await getUserId()
-      if (response?.role?.type) {
-        setUserData(response.role.type);
-      }  else {
-        setUserData(response);
+      if (response) {
+        setUserData(response)
       }
-      
     } catch (error) {
       console.error(error)
     } finally {
@@ -28,24 +25,26 @@ function AuthProvider({ children }) {
   useEffect(() => {
     fetchLoggedInUser()
   }, [])
+
+  if (isLoading) {
+    // Return a loading indicator while the API call is in progress
+    return (
+      <div id="preloader">
+        <div id="status">
+          <div className="spinner-chase">
+            <div className="chase-dot" />
+            <div className="chase-dot" />
+            <div className="chase-dot" />
+            <div className="chase-dot" />
+            <div className="chase-dot" />
+            <div className="chase-dot" />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <AuthContext.Provider value={{ user: userData, setUser: handleUser }}>
-      {isLoading ? (
-          <div id="preloader">
-            <div id="status">
-              <div className="spinner-chase">
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-                <div className="chase-dot" />
-              </div>
-            </div>
-          </div>
-        ) : (
-          ""
-        )}
       {children}
     </AuthContext.Provider>
   )

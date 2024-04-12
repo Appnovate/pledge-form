@@ -207,26 +207,34 @@ export const getSitePagenation = (data, page, sizePerPage) => {
 
   return get(endpoint)
 }
-export const getSite = (data) => {
+export const getSite = data => {
   let endpoint = url.SITE
-  if(data){
-    endpoint +=`?filters[userId][$eq]=${data}`
+  if (data) {
+    endpoint += `?filters[userId][$eq]=${data}`
   }
   return get(endpoint)
 }
 export const getSiteById = data => get(`${url.SITE}/${data}`)
-export const getSiteFilter = data =>
-  get(`${url.SITE}?filters[location][$startsWith]=${data}`)
-export const getSiteFilterDate = (fromDate, toDate) =>
+export const getSiteFilter = (data, filterData) =>
   get(
-    `${url.SITE}?filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
+    `${url.SITE}?filters[userId][$eqi]=${data}&filters[location][$eqi]=${filterData}`
   )
+export const getSiteFilterDate = (fromDate, toDate, data) => {
+  let endpoint = `${url.SITE}?filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
+  if (data) {
+    endpoint += `&filters[userId][$eqi]=${data}`
+  }
+  return get(endpoint)
+}
+
 export const addNewSite = user => post(url.SITE, user)
 export const editSite = (data, user) => put(`${url.SITE}/${data}`, user)
 export const deleteSite = data => del(`${url.SITE}/${data}`)
 
 // upload
-export const addNewImage = data => post(url.CREATE_UPLOAD, data)
+export const getImageById = data => get(`${url.IMAGEID}/${data}`)
+
+export const deleteImage = data => del(`${url.IMAGEID}/${data}`)
 // get contacts
 export const getUsers = () => get(url.GET_USERS)
 // add user
