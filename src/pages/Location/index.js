@@ -12,26 +12,28 @@ import {
   Row,
 } from "reactstrap"
 import "../../../node_modules/leaflet/dist/leaflet.css"
-import { getSite, getSiteFilterDate } from "helpers/fakebackend_helper"
+import {
+  getSite,
+  getSiteFilterDate,
+  getUsersDetails,
+} from "helpers/fakebackend_helper"
 import { useFormik } from "formik"
 import moment from "moment"
 import * as Yup from "yup"
 import { useAuthContext } from "context/AuthContext"
 import MapImage from "./MapImage"
+
 Leaflet.Icon.Default.imagePath = "../node_modules/leaflet"
 
 delete Leaflet.Icon.Default.prototype._getIconUrl
 
-Leaflet.Icon.Default.mergeOptions({
-  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-})
-
 function index() {
   const { user } = useAuthContext()
   const [data, setData] = useState([])
+  const [userdata, setUerData] = useState([])
   const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const [filterProduct, setFilterProduct] = useState("")
   const formik = useFormik({
     initialValues: {
       fromDate: "",
@@ -96,12 +98,14 @@ function index() {
     try {
       setIsLoading(true)
       let res
+      let userDetalis
       if (user?.role?.type === "admin") {
         res = await getSite()
+        userDetalis = await getUsersDetails()
       } else if (user && user.id) {
         res = await getSite(user.id)
       }
-
+      setUerData(userDetalis)
       if (res) {
         setData(res.data)
       }
@@ -111,6 +115,27 @@ function index() {
       setIsLoading(false)
     }
   }
+
+  const getuserData = async () => {
+    try {
+      setIsLoading(true)
+      let res
+      if (filterProduct) {
+        res = await getSite(filterProduct)
+      } else {
+        res = await getSite()
+      }
+      setData(res.data)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getuserData()
+  }, [filterProduct])
 
   useEffect(() => {
     getLocationData()
@@ -153,10 +178,56 @@ function index() {
         )}
         <Card>
           <CardBody>
-            <h4 className="card-title ">Site Location</h4>
+            <Row>
+              <Col
+                lg={6}
+                md={6}
+                sm={12}
+                className="d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center align-items-center"
+              >
+                <div className="h2">Site Location</div>
+              </Col>
+            </Row>
             <Form onSubmit={formik.handleSubmit}>
               <Row className="">
-                <Col>
+                {userdata?.length > 0 ? (
+                  <Col lg="4">
+                    <div className="my-2">
+                      <Label htmlFor="siteName">Select Agent:</Label>
+                      <div className="d-flex align-items-center">
+                        <select
+                          className="form-control"
+                          value={filterProduct}
+                          onChange={e => setFilterProduct(e.target.value)}
+                        >
+                          <option value="">All User</option>
+                          {userdata.map((item, index) => (
+                            <option key={index} value={item.id}>
+                              {item.username}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </Col>
+                ) : (
+                  <Col lg="4">
+                    <div className="my-2">
+                      <Label htmlFor="siteName">Agent:</Label>
+                      <div className="d-flex align-items-center">
+                        {user?.username ? (
+                          <select
+                            className="form-control"
+                            defaultValue={user.username}
+                          >
+                            <option value="">{user.username}</option>
+                          </select>
+                        ) : null}
+                      </div>
+                    </div>
+                  </Col>
+                )}
+                <Col lg="4">
                   <div className="my-2">
                     <Label htmlFor="siteName">From Date:</Label>
                     <Input
@@ -178,7 +249,7 @@ function index() {
                     ) : null}
                   </div>
                 </Col>
-                <Col>
+                <Col lg="4">
                   <div className="mt-2">
                     <Label htmlFor="siteName">To Date:*</Label>
                     <Input
@@ -201,7 +272,7 @@ function index() {
                   </div>
                 </Col>
               </Row>
-              <Row className="mb-4">
+              <Row className="my-2">
                 <Col>
                   {isSearchbutton ? (
                     <button type="submit" className="btn btn-primary btn-lg">
@@ -226,8 +297,8 @@ function index() {
               <div id="leaflet-map" className="leaflet-map">
                 <Map bounds={bounds} zoom={13} style={{ height: "100%" }}>
                   <TileLayer
-                    attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
                   {data.map((item, index) => (
                     <MapImage data={item} key={index} />

@@ -82,8 +82,11 @@ export const GET_PROJECT_DETAIL = "/project"
 export const ADD_NEW_PROJECT = "/add/project"
 export const UPDATE_PROJECT = "/update/project"
 export const DELETE_PROJECT = "/delete/project"
+// ROLE
+export const ROLE = "/users-permissions/roles"
 // USER
 export const USER_ID = "users/me?populate=*"
+export const GET_USERS = "/users"
 //TASKS
 export const GET_TASKS = "/pledge-users"
 //site
@@ -95,7 +98,7 @@ export const CREATE_IMAGE = "/upload"
 
 export const UPDATE_IMAGE = "/upload"
 //CONTACTS
-export const GET_USERS = "/users"
+
 export const GET_USER_PROFILE = "/user"
 export const ADD_NEW_USER = "/add/user"
 export const UPDATE_USER = "/update/user"

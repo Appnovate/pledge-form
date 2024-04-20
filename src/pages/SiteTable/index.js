@@ -63,7 +63,7 @@ function index() {
     },
     {
       dataField: "attributes.userName",
-      text: "Staff",
+      text: "Agent Name",
       headerAlign: "center",
       formatter: (value, row) => {
         return (
@@ -286,15 +286,21 @@ function index() {
                     lg={6}
                     md={6}
                     sm={12}
-                    className="d-flex justify-content-lg-start justify-content-sm-center align-items-center"
+                    className="d-flex  justify-content-lg-start justify-content-md-start justify-content-sm-center align-items-center"
                   >
-                    <div className="h2">Sites</div>
+                    {/* <div className="m-sm-2" > */} 
+                     <Link to={"/create-site"}>
+                     <button className="btn btn-success btn-md my-1">
+                        Create Site
+                      </button>
+                     </Link>
+                    {/* </div> */}
                   </Col>
                   <Col
                     lg={6}
                     md={6}
                     sm={12}
-                    className="d-flex justify-content-lg-end justify-content-sm-center align-items-center"
+                    className="d-flex justify-content-lg-end justify-content-md-end justify-content-sm-center align-items-center"
                   >
                     <div className="d-flex align-items-center gap-2">
                       <div className="search-box text-right">
@@ -313,7 +319,7 @@ function index() {
                       {isSearchbutton ? (
                         <button
                           type="button"
-                          className="btn btn-primary btn-lg"
+                          className="btn btn-primary btn-md"
                           onClick={handleSearch}
                         >
                           Search
@@ -321,7 +327,7 @@ function index() {
                       ) : (
                         <button
                           type="button"
-                          className="btn btn-secondary btn-lg"
+                          className="btn btn-secondary btn-md"
                           onClick={handleClearSearch}
                         >
                           Clear Search
@@ -331,7 +337,19 @@ function index() {
                   </Col>
                 </Row>
 
-                {data ? (
+                {/* <Row className="mx-3">
+                <Col
+                    lg={6}
+                    md={6}
+                    sm={12}
+                    className="d-flex justify-content-lg-start justify-content-sm-center align-items-center"
+                  >
+                    <div >
+                      <h2>Sites</h2>
+                    </div>
+                  </Col>
+                </Row> */}
+                {data.length > 0 ? (
                   <Row>
                     <Col lg={12}>
                       <div className="m-2">
@@ -372,7 +390,7 @@ function index() {
                     </Col>
                   </Row>
                 ) : (
-                  <div className="alert alert-danger" role="alert">
+                  <div className="alert alert-secondary m-2" role="alert">
                     No data available.
                   </div>
                 )}

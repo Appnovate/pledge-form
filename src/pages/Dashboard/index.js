@@ -61,7 +61,7 @@ function index() {
           <Row>
             <Col lg={12}>
               <Row>
-                <Col lg="4">
+                {/* <Col lg="4">
                   <Link to={"/pledge-users"}>
                     <Card className="mini-stats-wid">
                       <CardBody>
@@ -79,15 +79,15 @@ function index() {
                       </CardBody>
                     </Card>
                   </Link>
-                </Col>
+                </Col> */}
 
                 <Col lg="4">
-                  <Link to={"/create-site"}>
+                  <Link to={"/site-view"}>
                     <Card className="mini-stats-wid">
                       <CardBody>
                         <div className="d-flex">
                           <div className="flex-grow-1">
-                            <p className="text-muted fw-medium">Create Site</p>
+                            <p className="text-muted fw-medium">Sites View</p>
                             <h4 className="mb-0">{totalSite}</h4>
                           </div>
                           <div className="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">

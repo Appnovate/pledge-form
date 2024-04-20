@@ -23,21 +23,48 @@ function index() {
   const [files, setFiles] = useState([])
   const [lan, setLan] = useState()
   const [lon, setLon] = useState()
-
   let history = useHistory()
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then(function (result) {
+          if (result.state === "denied") {
+            Swal.fire({
+              position: "center",
+              icon: "info",
+              title: "Please turn on your location",
+              showConfirmButton: false,
+              timer: 2000,
+            })
+          }
+        })
+    } else {
+      Swal.fire({
+        position: "center",
+        icon: "info",
+        title: "Geolocation is not available on your device",
+        showConfirmButton: false,
+        timer: 1500,
+      })
+    }
+  }, [])
 
   const formik = useFormik({
     initialValues: {
       siteName: "",
-      agentName: "",
+      contact: "",
       location: "",
       notes: "",
       status: "pending",
       products: "",
     },
     validationSchema: Yup.object().shape({
-      siteName: Yup.string().required("Please Enter Your Name"),
-      location: Yup.string().required("Please Enter location"),
+      siteName: Yup.string().required("Please Enter Site Name"),
+      location: Yup.string().required("Please Enter Location"),
+      contact: Yup.string()
+    .required("Please Enter Phone Number")
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     }),
     onSubmit: async values => {
       if (lan && lon) {
@@ -51,8 +78,9 @@ function index() {
           icon: "info",
           title: "Please turn on your location",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 2000,
         })
+
         return
       }
 
@@ -87,15 +115,14 @@ function index() {
           history.push("/site-view")
         }
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Error:", error.response.data.error.message)
         Swal.fire({
           position: "center",
           icon: "error",
-          title: "An error occurred. Please try again later.",
+          title: error.response.data.error.message,
           showConfirmButton: false,
           timer: 1500,
         })
-        history.push("/dashboard")
       } finally {
         setIsLoading(false)
       }
@@ -154,6 +181,11 @@ function index() {
               <Card className="rounded-4">
                 <CardBody className="justify-content-center">
                   <Form onSubmit={formik.handleSubmit}>
+                    <div>
+                      {user && user.username ? (
+                        <h5>Agent Name : {user.username} </h5>
+                      ) : null}
+                    </div>
                     <Row className="">
                       <Col>
                         <div className="mt-4">
@@ -206,7 +238,48 @@ function index() {
                         </div>
                       </Col>
                     </Row>
+                    <Row>
+                      <Col lg="6">
+                        <div className="mt-4">
+                          <Label htmlFor="location">Latitude :</Label>
 
+                          {lan ? (
+                            <Input
+                              className="form-control"
+                              type="text"
+                              disabled
+                              value={lan}
+                            />
+                          ) : (
+                            <Input
+                              className="form-control"
+                              type="text"
+                              disabled
+                            />
+                          )}
+                        </div>
+                      </Col>
+                      <Col lg="6">
+                        <div className="mt-4">
+                          <Label htmlFor="location">Longitude:</Label>
+
+                          {lon ? (
+                            <Input
+                              className="form-control"
+                              type="text"
+                              disabled
+                              value={lon}
+                            />
+                          ) : (
+                            <Input
+                              className="form-control"
+                              type="text"
+                              disabled
+                            />
+                          )}
+                        </div>
+                      </Col>
+                    </Row>
                     <Row>
                       <Col lg={6}>
                         <div className="mt-4">
@@ -276,16 +349,26 @@ function index() {
                     <Row>
                       <Col>
                         <div className="mt-4">
-                          <Label htmlFor="notes">Agent Name:</Label>
+                          <Label htmlFor="notes">Phone Number:</Label>
 
                           <Input
                             className="form-control"
-                            type="text"
-                            id="agentName"
-                            name="agentName"
+                            type="number"
+                            id="contact"
+                            name="contact"
                             onChange={formik.handleChange}
-                            value={formik.values.agentName}
+                            value={formik.values.contact}
+                            invalid={
+                              formik.touched.contact && formik.errors.contact
+                                ? true
+                                : false
+                            }
                           />
+                          {formik.touched.contact && formik.errors.contact ? (
+                            <FormFeedback type="invalid">
+                              {formik.errors.contact}
+                            </FormFeedback>
+                          ) : null}
                         </div>
                       </Col>
                     </Row>
@@ -308,7 +391,7 @@ function index() {
                             <option value="pending">Pending</option>
                             <option value="quotation">Quotation</option>
                             <option value="done">Done</option>
-                            <option value="canceled">Canceled</option>
+                            <option value="canceled">Cancelled</option>
                           </select>
                         </div>
                       </Col>

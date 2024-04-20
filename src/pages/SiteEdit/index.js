@@ -23,14 +23,14 @@ import {
 import axios from "axios"
 import { useAuthContext } from "context/AuthContext"
 import defaultImage from "assets/images/default.jpg"
+import { Link } from "react-router-dom"
 function index() {
   const { user } = useAuthContext()
   let params = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState()
   const [imagePath, setImagePath] = useState(null)
-  const [lan, setLan] = useState()
-  const [lon, setLon] = useState()
+
   const [files, setFiles] = useState([])
   let history = useHistory()
   useEffect(async () => {
@@ -58,20 +58,21 @@ function index() {
   const formik = useFormik({
     initialValues: {
       siteName: "",
-      agentName: "",
+      contact: "",
       location: "",
       notes: "",
       status: "pending",
       products: "",
     },
     validationSchema: Yup.object().shape({
-      siteName: Yup.string().required("Please Enter Your Name"),
-      location: Yup.string().required("Please Enter location"),
+      siteName: Yup.string().required("Please Enter Site Name"),
+      location: Yup.string().required("Please Enter Location"),
+      contact: Yup.string()
+        .required("Please Enter Phone Number")
+        .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     }),
     onSubmit: async values => {
-      if (lan && lon) {
-        values.latitude = lan
-        values.longitude = lon
+      if (user && user.id) {
         values.userId = user.id
       } else {
         Swal.fire({
@@ -96,8 +97,7 @@ function index() {
             formdata
           )
           imageId = response.data[0].id
-          console.log(response)
-          if (response.status === 200) {
+          if (response.status === 200 && data.imageId) {
             await deleteImage(data.imageId)
           }
         }
@@ -118,26 +118,20 @@ function index() {
           history.push("/site-view")
         }
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Error:", error.response.data.error.message)
         Swal.fire({
           position: "center",
           icon: "error",
-          title: "An error occurred. Please try again later.",
+          title: error.response.data.error.message,
           showConfirmButton: false,
           timer: 1500,
         })
-        history.push("/dashboard")
       } finally {
         setIsLoading(false)
       }
     },
   })
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => {
-      setLan(position.coords.latitude)
-      setLon(position.coords.longitude)
-    })
-  }, [])
+
   const handleChange = files => {
     const filesArray = Array.from(files)
     const formattedFiles = filesArray.map(file => ({
@@ -185,6 +179,11 @@ function index() {
               <Card className="rounded-4">
                 <CardBody className="justify-content-center">
                   <Form onSubmit={formik.handleSubmit}>
+                    <div>
+                      {user && user.username ? (
+                        <h5>Agent Name : {user.username} </h5>
+                      ) : null}
+                    </div>
                     <Row className="">
                       <Col>
                         <div className="mt-4">
@@ -305,12 +304,14 @@ function index() {
                                         />
                                       </Col>
                                       <Col>
-                                        {/* <Link 
-                                         to="#"
-                                         className="text-muted font-weight-bold"
-                                       >
-                                         {imagePath.name}
-                                       </Link>  */}
+                                        <div className="d-flex justify-content-end align-items-start">
+                                          <Link
+                                            to={`/image-delete/${params.id}`}
+                                            style={{ color: "red" }}
+                                          >
+                                            <i className="bx bx-x-circle font-size-15"></i>
+                                          </Link>
+                                        </div>
                                         <p className="mb-0">
                                           <strong>
                                             {imagePath.size + "KB"}
@@ -370,16 +371,26 @@ function index() {
                     <Row>
                       <Col>
                         <div className="mt-4">
-                          <Label htmlFor="notes">Agent Name:</Label>
+                          <Label htmlFor="notes">Phone Number:</Label>
 
                           <Input
                             className="form-control"
-                            type="text"
-                            id="agentName"
-                            name="agentName"
+                            type="number"
+                            id="contact"
+                            name="contact"
                             onChange={formik.handleChange}
-                            value={formik.values.agentName}
+                            value={formik.values.contact}
+                            invalid={
+                              formik.touched.contact && formik.errors.contact
+                                ? true
+                                : false
+                            }
                           />
+                          {formik.touched.contact && formik.errors.contact ? (
+                            <FormFeedback type="invalid">
+                              {formik.errors.contact}
+                            </FormFeedback>
+                          ) : null}
                         </div>
                       </Col>
                     </Row>
@@ -402,7 +413,7 @@ function index() {
                             <option value="pending">Pending</option>
                             <option value="quotation">Quotation</option>
                             <option value="done">Done</option>
-                            <option value="canceled">Canceled</option>
+                            <option value="canceled">Cancelled</option>
                           </select>
                         </div>
                       </Col>

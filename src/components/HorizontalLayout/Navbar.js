@@ -11,7 +11,7 @@ import { logoutUser, toggleLeftmenu } from "store/actions"
 import { useAuthContext } from "context/AuthContext"
 
 const Navbar = props => {
-  const { setUser } = useAuthContext()
+  const { user, setUser } = useAuthContext()
 
   useEffect(() => {
     var matchingMenuItem = null
@@ -61,7 +61,7 @@ const Navbar = props => {
   let handler = () => {
     dispatch(toggleLeftmenu())
   }
-  
+
   return (
     <React.Fragment>
       <div className="topnav">
@@ -80,7 +80,6 @@ const Navbar = props => {
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
                     onClick={() => {
-                      
                       handler()
                     }}
                     to={"/dashboard"}
@@ -89,9 +88,8 @@ const Navbar = props => {
                     {props.t("Dashboard")} {props.menuOpen}
                     {/* <div className="arrow-down"></div> */}
                   </Link>
-                  
                 </li>
-                <li className="nav-item dropdown">
+                {/* <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
                     to="/pledge-users"
@@ -102,17 +100,17 @@ const Navbar = props => {
                     <i className="bx bx-user me-2"></i>
                     {props.t("Pledged Users")} {props.menuOpen}
                   </Link>
-                </li>
+                </li> */}
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
-                    to="/site-view"
+                    to="/create-site"
                     onClick={() => {
                       handler()
                     }}
                   >
                     <i className="bx bx-notepad me-2"></i>
-                    {props.t("Site View")} {props.menuOpen}
+                    {props.t("Create Site")} {props.menuOpen}
                   </Link>
                 </li>
                 <li className="nav-item dropdown">
@@ -127,6 +125,20 @@ const Navbar = props => {
                     {props.t("Location View")} {props.menuOpen}
                   </Link>
                 </li>
+                {user?.role?.type === "admin" ? (
+                  <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/site-users"
+                      onClick={() => {
+                        handler()
+                      }}
+                    >
+                      <i className="bx bx-user me-2"></i>
+                      {props.t("Users")} {props.menuOpen}
+                    </Link>
+                  </li>
+                ) : null}
               </ul>
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item dropdown">

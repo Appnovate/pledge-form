@@ -195,8 +195,16 @@ export const getTasksPagination = (page, sizePerPage) =>
 export const getTasks = () => get(url.GET_TASKS)
 export const getTasksFilter = data =>
   get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
-// get user id
+  // role module
+  export const createRole = () => get(url.ROLE)
+  export const getRole = () => get(url.ROLE)
+// get user 
 export const getUserId = () => get(url.USER_ID)
+export const getUsersDetails = () => get(`${url.GET_USERS}?populate=*`)
+export const createUsersDetails = (data) => post(url.GET_USERS,data)
+export const updateUsersDetailsById = (data,value) => put(`${url.GET_USERS}/${data}`,value)
+export const getUsersDetailsById = data => get(`${url.GET_USERS}/${data}?populate=*`)
+export const deleteUsersDetailsById = data => del(`${url.GET_USERS}/${data}`)
 // site
 export const getSitePagenation = (data, page, sizePerPage) => {
   let endpoint = `${url.SITE}?pagination[page]=${page}&pagination[pageSize]=${sizePerPage}`

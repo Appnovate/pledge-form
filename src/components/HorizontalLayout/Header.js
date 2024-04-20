@@ -10,7 +10,7 @@ import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 
 
 
-import logo from "../../assets/images/logo.svg"
+import logo from "../../assets/images/itianz.png"
 import logoLight from "../../assets/images/logo-light.png"
 import logoLightSvg from "../../assets/images/logo-light.svg"
 import logoDark from "../../assets/images/logo-dark.png"
@@ -31,20 +31,22 @@ const Header = props => {
               <Link to="/" className="logo logo-dark">
                 <span className="logo-sm">
                   <img src={logo} alt="" height="22" />
+                  {/* <h3> Itizan</h3> */}
                 </span>
                 <span className="logo-lg">
-                  <img src={logoDark} alt="" height="17" />
+                  <img src={logo} alt="" height="17" />
+                 {/* <h3> Itianz</h3> */}
                 </span>
               </Link>
 
-              <Link to="/" className="logo logo-light">
+              {/* <Link to="/" className="logo logo-light">
                 <span className="logo-sm">
                   <img src={logoLightSvg} alt="" height="22" />
                 </span>
                 <span className="logo-lg">
                   <img src={logoLight} alt="" height="19" />
                 </span>
-              </Link>
+              </Link> */}
             </div>
 
             <button
