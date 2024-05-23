@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Container, Row, Col, Card, Badge } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
-import { getUsersDetails } from "helpers/fakebackend_helper"
+import { getUsersDetails, getUsersFilterDetails } from "helpers/fakebackend_helper"
 import { useAuthContext } from "context/AuthContext"
 import { Link } from "react-router-dom"
 import { upperCase } from "lodash"
@@ -10,6 +10,8 @@ import { upperCase } from "lodash"
 function index() {
   const { user } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
+  const [filterProducts, setFilterProducts] = useState("")
+  const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [data, setData] = useState([])
   const [page, setPage] = useState(1)
   const [sizePerPage, setSizePerPage] = useState(5)
@@ -162,6 +164,19 @@ function index() {
       },
     },
   ]
+  const handleSearch = async () => {
+    if (filterProducts) {
+      setIsSearchbutton(!isSearchbutton)
+      let res = await getUsersFilterDetails(filterProducts)
+    setData(res)
+    }
+  }
+
+  const handleClearSearch = async () => {
+    setIsSearchbutton(!isSearchbutton)
+    setFilterProducts("")
+    getUsersData()
+  }
   let handleChange = (type, { page, sizePerPage }) => {
     setPage(page)
     setSizePerPage(sizePerPage)
@@ -192,23 +207,62 @@ function index() {
               <Card>
                 <Row className="m-3">
                   <Col
-                    lg={6}
-                    md={6}
+                    lg={4}
+                    md={4}
                     sm={12}
                     className="d-flex justify-content-lg-start justify-content-md-start -content-sm-center align-items-center"
                   >
                     <div className="h2">Users</div>
                   </Col>
                   <Col
-                    lg={6}
-                    md={6}
+                    lg={4}
+                    md={4}
                     sm={12}
                     className="d-flex justify-content-lg-end justify-content-md-end justify-content-sm-center align-items-center"
                   >
                     <div className="d-flex align-items-center gap-2">
+                      <div className="search-box text-right">
+                        <div className="position-relative">
+                          <input
+                            type="text"
+                            className="form-control border-2"
+                            placeholder="Search..."
+                            value={filterProducts}
+                            onChange={e => setFilterProducts(e.target.value)}
+                          />
+                          <i className="bx bx-search-alt search-icon" />
+                        </div>
+                      </div>
+
+                      {isSearchbutton ? (
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-md"
+                          onClick={handleSearch}
+                        >
+                          Search
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-md"
+                          onClick={handleClearSearch}
+                        >
+                          Clear Search
+                        </button>
+                      )}
+                    </div>
+                  </Col>
+                  <Col
+                    lg={4}
+                    md={4}
+                    sm={12}
+                    className="d-flex justify-content-lg-end justify-content-md-end justify-content-sm-center align-items-center"
+                  >
+                    <div className="d-flex align-items-center gap-2 my-1">
                       <Link
                         to="/create-users"
-                        className="btn btn-primary btn-lg"
+                        className="btn btn-primary btn-md"
                       >
                         Create User
                       </Link>

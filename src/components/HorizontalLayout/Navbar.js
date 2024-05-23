@@ -122,7 +122,7 @@ const Navbar = props => {
                     }}
                   >
                     <i className="bx bx-map-pin me-2"></i>
-                    {props.t("Location View")} {props.menuOpen}
+                    {props.t("Site View")} {props.menuOpen}
                   </Link>
                 </li>
                 {user?.role?.type === "admin" ? (

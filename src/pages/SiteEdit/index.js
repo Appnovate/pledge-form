@@ -401,11 +401,11 @@ function index() {
                             className="form-check-label"
                             htmlFor="invalidCheck"
                           >
-                            Status
+                            Status:
                           </Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="status"
                             onChange={formik.handleChange}
                             value={formik.values.status}

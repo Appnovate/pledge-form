@@ -20,6 +20,7 @@ function Createuser() {
   //   const { user } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
   const [isrole, setIsRole] = useState([])
+  const [show, setShow] = useState(false)
   let history = useHistory()
   const formik = useFormik({
     initialValues: {
@@ -173,10 +174,10 @@ function Createuser() {
                     <Row>
                       <div className="mt-4">
                         <Label htmlFor="password">Password:*</Label>
-
+                        <div className="input-group auth-pass-inputgroup">
                         <Input
                           className="form-control"
-                          type="password"
+                          type={show?"text":"password"}
                           id="password"
                           name="password"
                           onChange={formik.handleChange}
@@ -187,6 +188,15 @@ function Createuser() {
                               : false
                           }
                         />
+                         <button
+                            onClick={() => setShow(!show)}
+                            className="btn btn-light "
+                            type="button"
+                            id="password-addon"
+                          >
+                            <i className="mdi mdi-eye-outline"></i>
+                          </button>
+                        </div>
                         {formik.touched.password && formik.errors.password ? (
                           <FormFeedback type="invalid">
                             {formik.errors.password}
@@ -206,7 +216,7 @@ function Createuser() {
                           </Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="role"
                             onChange={e => {
                               const selectedRole = isrole.find(
@@ -238,7 +248,7 @@ function Createuser() {
                           <Label className="form-check-label">Confirmed</Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="confirmed"
                             value={formik.values.confirmed}
                             onChange={formik.handleChange}
@@ -255,7 +265,7 @@ function Createuser() {
                           <Label className="form-check-label">Blocked</Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="blocked"
                             value={formik.values.blocked}
                             onChange={formik.handleChange}

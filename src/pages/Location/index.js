@@ -22,6 +22,7 @@ import moment from "moment"
 import * as Yup from "yup"
 import { useAuthContext } from "context/AuthContext"
 import MapImage from "./MapImage"
+import TableView from "./SiteDataView/index"
 
 Leaflet.Icon.Default.imagePath = "../node_modules/leaflet"
 
@@ -33,34 +34,36 @@ function index() {
   const [userdata, setUerData] = useState([])
   const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
-  const [filterProduct, setFilterProduct] = useState("")
+
+  const [totalCount, setTotalCount] = useState(0)
   const formik = useFormik({
     initialValues: {
       fromDate: "",
       toDate: "",
+      searchData: "",
+      userFilter: "",
+      statusFilter: "",
     },
 
     validationSchema: Yup.object({
-      fromDate: Yup.string().required("From Date is required"),
-      toDate: Yup.string()
-        .required("To Date is required")
-        .test(
-          "is-greater-than-start",
-          "toDate must be at least one day after fromDate",
-          function (toDate) {
-            const { fromDate } = this.parent
-            if (!fromDate || !toDate) {
-              return true
-            }
-
-            const startTime = new Date(fromDate)
-            const endTime = new Date(toDate)
-            const oneDayMilliseconds = 24 * 60 * 60 * 1000
-            const differenceMilliseconds = endTime - startTime
-
-            return differenceMilliseconds >= oneDayMilliseconds
+      fromDate: "",
+      toDate: Yup.string().test(
+        "is-greater-than-start",
+        "toDate must be at least one day after fromDate",
+        function (toDate) {
+          const { fromDate } = this.parent
+          if (!fromDate || !toDate) {
+            return true
           }
-        ),
+
+          const startTime = new Date(fromDate)
+          const endTime = new Date(toDate)
+          const oneDayMilliseconds = 24 * 60 * 60 * 1000
+          const differenceMilliseconds = endTime - startTime
+
+          return differenceMilliseconds >= oneDayMilliseconds
+        }
+      ),
     }),
 
     onSubmit: async values => {
@@ -74,15 +77,28 @@ function index() {
       try {
         let res
         if (user?.role?.type === "admin") {
-          if (fromDateISO && toDateISO) {
-            res = await getSiteFilterDate(fromDateISO, toDateISO)
+          if ((fromDateISO && toDateISO) || values) {
+            res = await getSiteFilterDate(
+              fromDateISO,
+              toDateISO,
+              values.userFilter,
+              values.statusFilter,
+              values.searchData
+            )
           }
         } else if (user && user.id) {
-          if (fromDateISO && toDateISO) {
-            res = await getSiteFilterDate(fromDateISO, toDateISO, user.id)
+          if ((fromDateISO && toDateISO) || values) {
+            res = await getSiteFilterDate(
+              fromDateISO,
+              toDateISO,
+              user.id,
+              values.statusFilter,
+              values.searchData
+            )
           }
         }
         if (res) {
+          setTotalCount(res.meta.pagination.total)
           setData(res.data)
           setIsSearchbutton(false)
         }
@@ -108,6 +124,7 @@ function index() {
       setUerData(userDetalis)
       if (res) {
         setData(res.data)
+        setTotalCount(res.meta.pagination.total)
       }
     } catch (error) {
       console.log(error)
@@ -115,34 +132,19 @@ function index() {
       setIsLoading(false)
     }
   }
-
-  const getuserData = async () => {
-    try {
-      setIsLoading(true)
-      let res
-      if (filterProduct) {
-        res = await getSite(filterProduct)
-      } else {
-        res = await getSite()
-      }
-      setData(res.data)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    getuserData()
-  }, [filterProduct])
 
   useEffect(() => {
     getLocationData()
   }, [user])
 
   const handleClearSearchBack = () => {
-    formik.setValues({ fromDate: "", toDate: "" })
+    formik.setValues({
+      fromDate: "",
+      toDate: "",
+      userFilter: "",
+      statusFilter: "",
+      searchData:""
+    })
     formik.setTouched({ fromDate: false, toDate: false })
     setTimeout(() => {
       getLocationData()
@@ -189,16 +191,17 @@ function index() {
               </Col>
             </Row>
             <Form onSubmit={formik.handleSubmit}>
-              <Row className="">
+              <Row>
                 {userdata?.length > 0 ? (
-                  <Col lg="4">
+                  <Col lg="6" md="6">
                     <div className="my-2">
                       <Label htmlFor="siteName">Select Agent:</Label>
                       <div className="d-flex align-items-center">
                         <select
-                          className="form-control"
-                          value={filterProduct}
-                          onChange={e => setFilterProduct(e.target.value)}
+                          className="form-select"
+                          name="userFilter"
+                          value={formik.values.userFilter}
+                          onChange={formik.handleChange}
                         >
                           <option value="">All User</option>
                           {userdata.map((item, index) => (
@@ -211,14 +214,15 @@ function index() {
                     </div>
                   </Col>
                 ) : (
-                  <Col lg="4">
+                  <Col lg="6" md="6">
                     <div className="my-2">
                       <Label htmlFor="siteName">Agent:</Label>
                       <div className="d-flex align-items-center">
                         {user?.username ? (
                           <select
-                            className="form-control"
+                            className="form-select"
                             defaultValue={user.username}
+                            disabled
                           >
                             <option value="">{user.username}</option>
                           </select>
@@ -227,72 +231,122 @@ function index() {
                     </div>
                   </Col>
                 )}
-                <Col lg="4">
+                <Col lg="6" md="6">
                   <div className="my-2">
-                    <Label htmlFor="siteName">From Date:</Label>
-                    <Input
-                      className="form-control"
-                      type="date"
-                      name="fromDate"
-                      value={formik.values.fromDate}
-                      onChange={formik.handleChange}
-                      invalid={
-                        formik.touched.fromDate && formik.errors.fromDate
-                          ? true
-                          : false
-                      }
-                    />
-                    {formik.touched.fromDate && formik.errors.fromDate ? (
-                      <FormFeedback type="invalid">
-                        {formik.errors.fromDate}
-                      </FormFeedback>
-                    ) : null}
-                  </div>
-                </Col>
-                <Col lg="4">
-                  <div className="mt-2">
-                    <Label htmlFor="siteName">To Date:*</Label>
-                    <Input
-                      className="form-control"
-                      type="date"
-                      name="toDate"
-                      value={formik.values.toDate}
-                      onChange={formik.handleChange}
-                      invalid={
-                        formik.touched.toDate && formik.errors.toDate
-                          ? true
-                          : false
-                      }
-                    />
-                    {formik.touched.toDate && formik.errors.toDate ? (
-                      <FormFeedback type="invalid">
-                        {formik.errors.toDate}
-                      </FormFeedback>
-                    ) : null}
+                    <Label htmlFor="siteName">Status:</Label>
+                    <div className="d-flex align-items-center">
+                      <select
+                        className="form-select"
+                        name="statusFilter"
+                        onChange={formik.handleChange}
+                        value={formik.values.statusFilter}
+                      >
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="quotation">Quotation</option>
+                        <option value="done">Done</option>
+                        <option value="canceled">Cancelled</option>
+                      </select>
+                    </div>
                   </div>
                 </Col>
               </Row>
-              <Row className="my-2">
+              <Row>
                 <Col>
-                  {isSearchbutton ? (
-                    <button type="submit" className="btn btn-primary btn-lg">
-                      Submit
-                    </button>
-                  ) : (
-                    <React.Fragment>
-                      <button
-                        onClick={handleClearSearchBack}
-                        className="btn btn-secondary btn-lg"
-                        type="button"
-                      >
-                        Back
-                      </button>
-                    </React.Fragment>
-                  )}
+                  <Row>
+                    <Col lg="4" md="4">
+                      <div className="my-2">
+                        <Label htmlFor="siteName">From Date:</Label>
+                        <Input
+                          className="form-control"
+                          type="date"
+                          name="fromDate"
+                          value={formik.values.fromDate}
+                          onChange={formik.handleChange}
+                          invalid={
+                            formik.touched.fromDate && formik.errors.fromDate
+                              ? true
+                              : false
+                          }
+                        />
+                        {formik.touched.fromDate && formik.errors.fromDate ? (
+                          <FormFeedback type="invalid">
+                            {formik.errors.fromDate}
+                          </FormFeedback>
+                        ) : null}
+                      </div>
+                    </Col>
+                    <Col lg="4" md="4">
+                      <div className="mt-2">
+                        <Label htmlFor="siteName">To Date:*</Label>
+                        <Input
+                          className="form-control"
+                          type="date"
+                          name="toDate"
+                          value={formik.values.toDate}
+                          onChange={formik.handleChange}
+                          invalid={
+                            formik.touched.toDate && formik.errors.toDate
+                              ? true
+                              : false
+                          }
+                        />
+                        {formik.touched.toDate && formik.errors.toDate ? (
+                          <FormFeedback type="invalid">
+                            {formik.errors.toDate}
+                          </FormFeedback>
+                        ) : null}
+                      </div>
+                    </Col>
+                    <Col lg="4" md="4">
+                      <div className="my-2">
+                        <Label htmlFor="siteName">Search:</Label>
+                        <div className="text-right">
+                          <div className="position-relative">
+                            <input
+                              type="text"
+                              name="searchData"
+                              className="form-control"
+                              placeholder="Search..."
+                              value={formik.values.searchData}
+                              onChange={formik.handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div className="text-end m-2">
+                        {/* Content for third column */}
+                        {isSearchbutton ? (
+                          <button
+                            type="submit"
+                            className="btn btn-primary btn-md"
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <React.Fragment>
+                            <button
+                              onClick={handleClearSearchBack}
+                              className="btn btn-secondary btn-md"
+                              type="button"
+                            >
+                              Back
+                            </button>
+                          </React.Fragment>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Form>
 
+            {/* <Row>
+              <Col> */}
             {data.length > 0 ? (
               <div id="leaflet-map" className="leaflet-map">
                 <Map bounds={bounds} zoom={13} style={{ height: "100%" }}>
@@ -310,8 +364,11 @@ function index() {
                 No data available.
               </div>
             )}
+            {/* </Col>
+            </Row> */}
           </CardBody>
         </Card>
+        <TableView data={data} totalCount={totalCount} />
       </div>
     </React.Fragment>
   )

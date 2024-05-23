@@ -5,21 +5,21 @@ import { Link } from "react-router-dom"
 import { useAuthContext } from "context/AuthContext"
 function index() {
   const { user } = useAuthContext()
-  const [totalCount, setTotalCount] = useState(0)
+  // const [totalCount, setTotalCount] = useState(0)
   const [totalSite, setTotalSite] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
-  let getTasksData = async () => {
-    setIsLoading(true)
-    try {
-      let res = await getTasks()
+  // let getTasksData = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     let res = await getTasks()
 
-      setTotalCount(res.meta.pagination.total)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  //     setTotalCount(res.meta.pagination.total)
+  //   } catch (error) {
+  //     console.log(error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
   let getSiteData = async () => {
     try {
       if (user?.role?.type === "admin") {
@@ -34,7 +34,6 @@ function index() {
     }
   }
   useEffect(() => {
-    getTasksData()
     getSiteData()
   }, [user])
 
@@ -82,7 +81,7 @@ function index() {
                 </Col> */}
 
                 <Col lg="4">
-                  <Link to={"/site-view"}>
+                  <Link to={"/location-view"}>
                     <Card className="mini-stats-wid">
                       <CardBody>
                         <div className="d-flex">

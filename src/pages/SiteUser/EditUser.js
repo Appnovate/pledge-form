@@ -197,7 +197,7 @@ function EditUser() {
                           </Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="role"
                             onBlur={formik.handleBlur}
                             onChange={e => {
@@ -231,7 +231,7 @@ function EditUser() {
                           <Label className="form-check-label">Confirmed</Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="confirmed"
                             value={formik.values.confirmed}
                             onChange={formik.handleChange}
@@ -248,7 +248,7 @@ function EditUser() {
                           <Label className="form-check-label">Blocked</Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="blocked"
                             value={formik.values.blocked}
                             onChange={formik.handleChange}

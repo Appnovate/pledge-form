@@ -195,15 +195,18 @@ export const getTasksPagination = (page, sizePerPage) =>
 export const getTasks = () => get(url.GET_TASKS)
 export const getTasksFilter = data =>
   get(`${url.GET_TASKS}?filters[email][$startsWith]=${data}`)
-  // role module
-  export const createRole = () => get(url.ROLE)
-  export const getRole = () => get(url.ROLE)
-// get user 
+// role module
+export const createRole = () => get(url.ROLE)
+export const getRole = () => get(url.ROLE)
+// get user
 export const getUserId = () => get(url.USER_ID)
 export const getUsersDetails = () => get(`${url.GET_USERS}?populate=*`)
-export const createUsersDetails = (data) => post(url.GET_USERS,data)
-export const updateUsersDetailsById = (data,value) => put(`${url.GET_USERS}/${data}`,value)
-export const getUsersDetailsById = data => get(`${url.GET_USERS}/${data}?populate=*`)
+export const getUsersFilterDetails = (data) => get(`${url.GET_USERS}?populate=*&filters[username][$containsi]=${data}`)
+export const createUsersDetails = data => post(url.GET_USERS, data)
+export const updateUsersDetailsById = (data, value) =>
+  put(`${url.GET_USERS}/${data}`, value)
+export const getUsersDetailsById = data =>
+  get(`${url.GET_USERS}/${data}?populate=*`)
 export const deleteUsersDetailsById = data => del(`${url.GET_USERS}/${data}`)
 // site
 export const getSitePagenation = (data, page, sizePerPage) => {
@@ -222,15 +225,64 @@ export const getSite = data => {
   }
   return get(endpoint)
 }
+// export const getSite = (filterProduct, statusFilter) => {
+//   let endpoint = url.SITE
+//   if (filterProduct && statusFilter) {
+//     endpoint += `?filters[userId][$eq]=${filterProduct}&filters[status][$eq]=${statusFilter}`
+//   } else if (filterProduct) {
+//     endpoint += `?filters[userId][$eq]=${filterProduct}`
+//   } else if (statusFilter) {
+//     endpoint += `?filters[status][$eq]=${statusFilter}`
+//   }
+
+//   return get(endpoint)
+// }
 export const getSiteById = data => get(`${url.SITE}/${data}`)
 export const getSiteFilter = (data, filterData) =>
   get(
     `${url.SITE}?filters[userId][$eqi]=${data}&filters[location][$eqi]=${filterData}`
   )
-export const getSiteFilterDate = (fromDate, toDate, data) => {
-  let endpoint = `${url.SITE}?filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
-  if (data) {
-    endpoint += `&filters[userId][$eqi]=${data}`
+export const getSiteFilterDate = (
+  fromDate,
+  toDate,
+  userFilter,
+  statusFilter,
+  searchData
+) => {
+  // let endpoint = `${url.SITE}?filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
+  // if (data) {
+  //   endpoint += `&filters[userId][$eqi]=${data}`
+  // }
+  let endpoint = url.SITE
+
+  let params = []
+
+  if (fromDate && toDate) {
+    params.push(
+      `filters[createdAt][$gte]=${fromDate}&filters[createdAt][$lte]=${toDate}`
+    )
+  } else if (fromDate) {
+    params.push(`filters[createdAt][$gte]=${fromDate}`)
+  } else if (toDate) {
+    params.push(`filters[createdAt][$lte]=${toDate}`)
+  }
+
+  if (userFilter) {
+    params.push(`filters[userId][$eq]=${userFilter}`)
+  }
+
+  if (statusFilter) {
+    params.push(`filters[status][$eq]=${statusFilter}`)
+  }
+  
+  if (searchData) {
+    params.push(`&filters[$and][0][$or][0][siteName][$containsi]=${searchData}`);
+    params.push(`&filters[$and][0][$or][1][location][$containsi]=${searchData}`);
+    params.push(`&filters[$and][0][$or][2][notes][$containsi]=${searchData}`);
+  }
+
+  if (params.length > 0) {
+    endpoint += `?${params.join("&")}`
   }
   return get(endpoint)
 }

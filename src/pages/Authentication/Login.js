@@ -36,6 +36,7 @@ const Login = props => {
   const { setUser } = useAuthContext()
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [registrationError, setRegistrationError] = useState("")
+  const [show, setShow] = useState(false)
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -98,7 +99,7 @@ const Login = props => {
                     <Col xs={7}>
                       <div className="text-primary p-4">
                         <h5 className="text-primary">Welcome Back !</h5>
-                        <p>Sign in to continue to Skote.</p>
+                        <p>Sign in to continue to Itianz.</p>
                       </div>
                     </Col>
                     <Col className="col-5 align-self-end">
@@ -161,20 +162,30 @@ const Login = props => {
 
                       <div className="mb-3">
                         <Label className="form-label">Password</Label>
-                        <Input
-                          name="password"
-                          value={validation.values.password || ""}
-                          type="password"
-                          placeholder="Enter Password"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          invalid={
-                            validation.touched.password &&
-                            validation.errors.password
-                              ? true
-                              : false
-                          }
-                        />
+                        <div className="input-group auth-pass-inputgroup">
+                          <Input
+                            name="password"
+                            value={validation.values.password || ""}
+                            type={show ? "text" : "password"}
+                            placeholder="Enter Password"
+                            onChange={validation.handleChange}
+                            onBlur={validation.handleBlur}
+                            invalid={
+                              validation.touched.password &&
+                              validation.errors.password
+                                ? true
+                                : false
+                            }
+                          />
+                          <button
+                            onClick={() => setShow(!show)}
+                            className="btn btn-light "
+                            type="button"
+                            id="password-addon"
+                          >
+                            <i className="mdi mdi-eye-outline"></i>
+                          </button>
+                        </div>
                         {validation.touched.password &&
                         validation.errors.password ? (
                           <FormFeedback type="invalid">
@@ -212,28 +223,28 @@ const Login = props => {
                         <ul className="list-inline"></ul>
                       </div>
 
-                      <div className="mt-4 text-center">
-                        <Link to="/forgot-password" className="text-muted">
+                      {/* <div className="mt-4 text-center">
+                        <Link to="#" className="text-muted">
                           <i className="mdi mdi-lock me-1" />
-                          Forgot your password?
+                          Change your password?
                         </Link>
-                      </div>
+                      </div> */}
                     </Form>
                   </div>
                 </CardBody>
               </Card>
               <div className="mt-5 text-center">
-                <p>
+                {/* <p>
                   Don&#39;t have an account ?{" "}
                   <Link to="/register" className="fw-medium text-primary">
                     {" "}
                     Signup now{" "}
                   </Link>{" "}
-                </p>
-                <p>
+                </p> */}
+                {/* <p>
                   © {new Date().getFullYear()} Skote. Crafted with{" "}
                   <i className="mdi mdi-heart text-danger" /> by Themesbrand
-                </p>
+                </p> */}
               </div>
             </Col>
           </Row>

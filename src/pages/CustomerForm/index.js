@@ -63,8 +63,8 @@ function index() {
       siteName: Yup.string().required("Please Enter Site Name"),
       location: Yup.string().required("Please Enter Location"),
       contact: Yup.string()
-    .required("Please Enter Phone Number")
-    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+        .required("Please Enter Phone Number")
+        .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     }),
     onSubmit: async values => {
       if (lan && lon) {
@@ -112,7 +112,7 @@ function index() {
             showConfirmButton: false,
             timer: 1500,
           })
-          history.push("/site-view")
+          history.push("/location-view")
         }
       } catch (error) {
         console.error("Error:", error.response.data.error.message)
@@ -146,6 +146,19 @@ function index() {
     const file = files[0]
     formik.setFieldValue("image", file)
   }
+  // const handleChange = (e) => {
+  //   const selectedFiles = Array.from(e.target.files);
+  
+  //   // Display preview for each selected file
+  //   const formattedFiles = selectedFiles.map((file) => ({
+  //     ...file,
+  //     preview: URL.createObjectURL(file),
+  //     formattedSize: formatBytes(file.size),
+  //   }));
+  
+  //   setFiles((prevFiles) => [...prevFiles, ...formattedFiles]);
+  // };
+  
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return "0 Bytes"
     const k = 1024
@@ -241,7 +254,7 @@ function index() {
                     <Row>
                       <Col lg="6">
                         <div className="mt-4">
-                          <Label htmlFor="location">Latitude :</Label>
+                          <Label htmlFor="Latitude">Latitude :</Label>
 
                           {lan ? (
                             <Input
@@ -261,7 +274,7 @@ function index() {
                       </Col>
                       <Col lg="6">
                         <div className="mt-4">
-                          <Label htmlFor="location">Longitude:</Label>
+                          <Label htmlFor="Longitude">Longitude:</Label>
 
                           {lon ? (
                             <Input
@@ -283,7 +296,7 @@ function index() {
                     <Row>
                       <Col lg={6}>
                         <div className="mt-4">
-                          <Label htmlFor="location">Photo:</Label>
+                          <Label htmlFor="Photo">Photo:</Label>
                           <input
                             type="file"
                             onChange={e => handleChange(e.target.files)}
@@ -379,11 +392,11 @@ function index() {
                             className="form-check-label"
                             htmlFor="invalidCheck"
                           >
-                            Status
+                            Status:
                           </Label>
 
                           <select
-                            className="form-control"
+                            className="form-select"
                             name="status"
                             onChange={formik.handleChange}
                             value={formik.values.status}
