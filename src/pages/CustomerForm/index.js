@@ -17,6 +17,7 @@ import Swal from "sweetalert2"
 import { addNewSite } from "helpers/fakebackend_helper"
 import axios from "axios"
 import { useAuthContext } from "context/AuthContext"
+import CurrentLoction from "./CurrentLoction"
 function index() {
   const { user } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
@@ -95,7 +96,6 @@ function index() {
             `${process.env.REACT_APP_URL}/upload`,
             formdata
           )
-
           imageId = response.data[0].id
         }
 
@@ -133,6 +133,11 @@ function index() {
       setLan(position.coords.latitude)
       setLon(position.coords.longitude)
     })
+    return () => {
+      setLan(null)
+      setLon(null)
+      setFiles([])
+    }
   }, [])
 
   const handleChange = files => {
@@ -146,25 +151,13 @@ function index() {
     const file = files[0]
     formik.setFieldValue("image", file)
   }
-  // const handleChange = (e) => {
-  //   const selectedFiles = Array.from(e.target.files);
   
-  //   // Display preview for each selected file
-  //   const formattedFiles = selectedFiles.map((file) => ({
-  //     ...file,
-  //     preview: URL.createObjectURL(file),
-  //     formattedSize: formatBytes(file.size),
-  //   }));
-  
-  //   setFiles((prevFiles) => [...prevFiles, ...formattedFiles]);
-  // };
-  
+
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return "0 Bytes"
     const k = 1024
     const dm = decimals < 0 ? 0 : decimals
     const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
-
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
   }
@@ -252,44 +245,31 @@ function index() {
                       </Col>
                     </Row>
                     <Row>
-                      <Col lg="6">
+                      <Col lg="5" md="5">
                         <div className="mt-4">
-                          <Label htmlFor="Latitude">Latitude :</Label>
-
-                          {lan ? (
-                            <Input
-                              className="form-control"
-                              type="text"
-                              disabled
-                              value={lan}
-                            />
-                          ) : (
-                            <Input
-                              className="form-control"
-                              type="text"
-                              disabled
-                            />
-                          )}
+                          <Label htmlFor="Latitude">Latitude:</Label>
+                          <Input
+                            className="form-control"
+                            type="text"
+                            disabled
+                            value={lan || ""}
+                          />
                         </div>
                       </Col>
-                      <Col lg="6">
+                      <Col lg="5" md="5">
                         <div className="mt-4">
                           <Label htmlFor="Longitude">Longitude:</Label>
-
-                          {lon ? (
-                            <Input
-                              className="form-control"
-                              type="text"
-                              disabled
-                              value={lon}
-                            />
-                          ) : (
-                            <Input
-                              className="form-control"
-                              type="text"
-                              disabled
-                            />
-                          )}
+                          <Input
+                            className="form-control"
+                            type="text"
+                            disabled
+                            value={lon || ""}
+                          />
+                        </div>
+                      </Col>
+                      <Col lg="2" md="2">
+                        <div className="mt-5">
+                          <CurrentLoction lan={lan} lon={lon} />
                         </div>
                       </Col>
                     </Row>
@@ -297,8 +277,9 @@ function index() {
                       <Col lg={6}>
                         <div className="mt-4">
                           <Label htmlFor="Photo">Photo:</Label>
-                          <input
+                          <Input
                             type="file"
+                            className="form-control"
                             onChange={e => handleChange(e.target.files)}
                           />
                         </div>

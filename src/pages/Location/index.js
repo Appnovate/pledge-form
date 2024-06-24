@@ -13,8 +13,8 @@ import {
 } from "reactstrap"
 import "../../../node_modules/leaflet/dist/leaflet.css"
 import {
-  getSite,
   getSiteFilterDate,
+  getSitePagenation,
   getUsersDetails,
 } from "helpers/fakebackend_helper"
 import { useFormik } from "formik"
@@ -34,6 +34,10 @@ function index() {
   const [userdata, setUerData] = useState([])
   const [isSearchbutton, setIsSearchbutton] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+
+  const [sizePerPage, setSizePerPage] = useState(5)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [totalCount, setTotalCount] = useState(0)
   const formik = useFormik({
@@ -116,10 +120,10 @@ function index() {
       let res
       let userDetalis
       if (user?.role?.type === "admin") {
-        res = await getSite()
+        res = await getSitePagenation(null, page, sizePerPage)
         userDetalis = await getUsersDetails()
       } else if (user && user.id) {
-        res = await getSite(user.id)
+        res = await getSitePagenation(user.id, page, sizePerPage)
       }
       setUerData(userDetalis)
       if (res) {
@@ -135,7 +139,7 @@ function index() {
 
   useEffect(() => {
     getLocationData()
-  }, [user])
+  }, [user, page, sizePerPage])
 
   const handleClearSearchBack = () => {
     formik.setValues({
@@ -143,7 +147,7 @@ function index() {
       toDate: "",
       userFilter: "",
       statusFilter: "",
-      searchData:""
+      searchData: "",
     })
     formik.setTouched({ fromDate: false, toDate: false })
     setTimeout(() => {
@@ -345,8 +349,6 @@ function index() {
               </Row>
             </Form>
 
-            {/* <Row>
-              <Col> */}
             {data.length > 0 ? (
               <div id="leaflet-map" className="leaflet-map">
                 <Map bounds={bounds} zoom={13} style={{ height: "100%" }}>
@@ -364,11 +366,18 @@ function index() {
                 No data available.
               </div>
             )}
-            {/* </Col>
-            </Row> */}
           </CardBody>
         </Card>
-        <TableView data={data} totalCount={totalCount} />
+        <TableView
+          data={data}
+          totalCount={totalCount}
+          sizePerPage={sizePerPage}
+          currentPage={currentPage}
+          page={page}
+          setCurrentPage={setCurrentPage}
+          setPage={setPage}
+          setSizePerPage={setSizePerPage}
+        />
       </div>
     </React.Fragment>
   )

@@ -8,7 +8,7 @@ function ImageView({ data, openImageInNewWindow }) {
     try {
       let response = await getImageById(data)
       if (response) {
-        setImagePath(response.url)
+        setImagePath(response)
       }
     } catch (error) {
       console.log(error)
@@ -19,14 +19,15 @@ function ImageView({ data, openImageInNewWindow }) {
     <div>
       {imagePath ? (
         <img
-          src={imagePath}
+          src={`${process.env.REACT_APP_IMAGE_VIEW}${imagePath.hash}${imagePath.ext}`}
+      
           alt="imagePath"
           style={{ width: "75px", height: "75px", cursor: "pointer" }}
           onClick={() => openImageInNewWindow(imagePath)}
         />
       ) : (
         <img style={{ width: "75px", height: "75px" }} src={defaultImage} />
-      )}
+      )}   
     </div>
   )
 }

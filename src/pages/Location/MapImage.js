@@ -24,7 +24,7 @@ function MapImage({ data }) {
         if (data && data.attributes.imageId) {
           let response = await getImageById(data.attributes.imageId)
           if (response) {
-            setImagePath(response.url)
+            setImagePath(response)
           }
         }
       } catch (error) {
@@ -36,7 +36,10 @@ function MapImage({ data }) {
   }, [data])
   const openImageInNewWindow = imagePath => {
     if (imagePath) {
-      window.open(imagePath, "_blank")
+      window.open(
+        `${process.env.REACT_APP_IMAGE_VIEW}${imagePath.hash}${imagePath.ext}`,
+        "_blank"
+      )
     }
   }
   return (
@@ -54,20 +57,24 @@ function MapImage({ data }) {
           {imagePath ? (
             <Card>
               {/* <CardBody> */}
-                <CardTitle>Agent Name:{data.attributes.userName}</CardTitle>
-                <CardTitle className="font-14">
-                  Site Name:{data.attributes.siteName}
-                </CardTitle>
+              <CardTitle>Agent Name:{data.attributes.userName}</CardTitle>
+              <CardTitle className="font-14">
+                Site Name:{data.attributes.siteName}
+              </CardTitle>
               {/* </CardBody> */}
-              <CardImg className="img" src={imagePath} alt="Skote" />
+              <CardImg
+                className="img"
+                src={`${process.env.REACT_APP_IMAGE_VIEW}${imagePath.hash}${imagePath.ext}`}
+                alt="Skote"
+              />
             </Card>
           ) : (
             <Card>
               {/* <CardBody> */}
-                <CardTitle>Agent Name:{data.attributes.userName}</CardTitle>
-                <CardTitle className="font-14">
-                  Site Name:{data.attributes.siteName}
-                </CardTitle>
+              <CardTitle>Agent Name:{data.attributes.userName}</CardTitle>
+              <CardTitle className="font-14">
+                Site Name:{data.attributes.siteName}
+              </CardTitle>
               {/* </CardBody> */}
               <CardImg className="img" src={defaultImage} alt="Skote" />
             </Card>

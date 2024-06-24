@@ -45,7 +45,6 @@ function index() {
 
         if (response) {
           let res = await editSite(params.id, { data: { imageId: null } })
-          console.log(res)
         }
 
         await Swal.fire({

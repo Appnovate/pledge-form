@@ -115,7 +115,7 @@ function index() {
             showConfirmButton: false,
             timer: 1500,
           })
-          history.push("/site-view")
+          history.push("/location-view")
         }
       } catch (error) {
         console.error("Error:", error.response.data.error.message)
@@ -295,7 +295,7 @@ function index() {
                                     <>
                                       <Col className="col-auto">
                                         <img
-                                          src={imagePath.url}
+                                          src={`${process.env.REACT_APP_IMAGE_VIEW}${imagePath.hash}${imagePath.ext}`}
                                           alt={imagePath.name}
                                           style={{
                                             width: "50px",

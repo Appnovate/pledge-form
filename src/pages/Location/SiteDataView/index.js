@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { Container, Row, Col, Card, Badge } from "reactstrap"
+import React from "react"
+import { Row, Col, Card, Badge } from "reactstrap"
 import BootstrapTable from "react-bootstrap-table-next"
 import moment from "moment"
 import paginationFactory from "react-bootstrap-table2-paginator"
@@ -7,12 +7,17 @@ import { Link } from "react-router-dom"
 import ImageView from "./ImageView"
 import defaultImage from "assets/images/default.jpg"
 import PropTypes from "prop-types"
-function index({ data,totalCount }) {
-  const [page, setPage] = useState(1)
-
-  const [sizePerPage, setSizePerPage] = useState(5)
-  const [currentPage, setCurrentPage] = useState(1)
-
+function index({
+  data,
+  totalCount,
+  page,
+  sizePerPage,
+  currentPage,
+  setSizePerPage,
+  setCurrentPage,
+  setPage,
+}) {
+  
   let columns = [
     {
       dataField: "index",
@@ -60,7 +65,10 @@ function index({ data,totalCount }) {
       formatter: (value, row) => {
         const openImageInNewWindow = imagePath => {
           if (imagePath) {
-            window.open(imagePath, "_blank")
+            window.open(
+              `${process.env.REACT_APP_IMAGE_VIEW}${imagePath.hash}${imagePath.ext}`,
+              "_blank"
+            )
           }
         }
         return (
@@ -202,6 +210,7 @@ function index({ data,totalCount }) {
   }
   return (
     <React.Fragment>
+      
       <Row>
         <Col>
           <Card>
@@ -249,7 +258,7 @@ function index({ data,totalCount }) {
               <div className="alert alert-secondary m-3" role="alert">
                 No data available.
               </div>
-            )} 
+            )}
           </Card>
         </Col>
       </Row>
@@ -261,5 +270,9 @@ export default index
 
 index.propTypes = {
   data: PropTypes.array,
-  totalCount: PropTypes.number
+  totalCount: PropTypes.number,
+  handleChange: PropTypes.any,
+  page: PropTypes.number,
+  sizePerPage: PropTypes.number,
+  currentPage: PropTypes.number,
 }

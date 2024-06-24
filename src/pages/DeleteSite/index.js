@@ -31,13 +31,13 @@ function index() {
           icon: "success",
         })
 
-        history.replace("/site-view")
+        history.replace("/location-view")
       } catch (error) {
         await Swal.fire("Error!", "Failed to delete!", "error")
       }
     } else {
       await Swal.fire("Cancelled", "Your file is safe :)", "info")
-      history.replace("/site-view")
+      history.replace("/location-view")
     }
   }
 
